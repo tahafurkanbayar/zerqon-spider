@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-09 — Aşama 6 tamamlandı: Test ve son kontroller
+- Temiz klon doğrulaması: GitHub'dan klon → `python run.py` (sistem Python 3.15) → uv'nin CPython 3.12'si bulundu → venv + bağımlılıklar + Chromium → sunucu HTTP 200. İkinci çalıştırma 1,4 sn (kurulum atlandı). `run.py --backup` çalıştı.
+- README (Türkçe, tüm §20 başlıkları), `docs/SCORING.md`.
+- Görsel kontroller: koyu tema + İngilizce dashboard, mobil (390px) düzen; mobil üst çubuk ve puan halkası düzeltildi.
+- Kullanılmayan `beautifulsoup4` bağımlılığı kaldırıldı (ayrıştırma lxml ile). Yönlendirilmiş çıktıda UTF-8.
+- Statik analiz: `ruff` (F/B/E/W/UP/SIM/S) — hata sınıfı bulgu yok, yalnızca stil önerileri.
+- Testler: 148/148 geçti. Kabul kriterleri tablosu `ROADMAP.md` sonunda.
+
 ## 2026-10-09 — Aşama 5 tamamlandı: Raporlama ve geçmiş
 - `analysis/scoring.py` + `docs/SCORING.md`: deterministik çarpımsal puan, kategori alt puanları, güvenilirlik (yüksek/orta/düşük + nedenler). Snapshot'a yazılıyor.
 - `reports/html_report.py` + `reports/templates/report.html`: tek dosya, JS/CDN/font yok, satır içi SVG logo, autoescape; rapor görüntülemede ayrı sıkı CSP (`default-src 'none'`).

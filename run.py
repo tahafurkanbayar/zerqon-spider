@@ -30,6 +30,16 @@ DEPS_STAMP = VENV / ".zerqon-deps"
 CHROMIUM_STAMP = VENV / ".zerqon-chromium"
 
 
+def _utf8_stdio() -> None:
+    """Çıktı dosyaya/boruya yönlendirildiğinde Türkçe karakterler bozulmasın (Windows yerel kod sayfası)."""
+    for stream in (sys.stdout, sys.stderr):
+        if stream is not None and hasattr(stream, "reconfigure") and not stream.isatty():
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except (OSError, ValueError):
+                pass
+
+
 def log(message: str) -> None:
     print(f"[zerqon] {message}", flush=True)
 
@@ -146,6 +156,7 @@ def ensure_chromium(py: Path) -> None:
 
 
 def main() -> int:
+    _utf8_stdio()
     args = sys.argv[1:]
     dev = "--dev" in args
     skip_browser = "--skip-browser-install" in args

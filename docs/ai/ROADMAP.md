@@ -51,29 +51,29 @@
 - [x] Yedekleme / geri yükleme
 
 ## Aşama 6 — Test ve son kontroller
-- [ ] Birim testleri (§19 listesi)
-- [ ] Entegrasyon + uçtan uca (yerel test sitesi)
-- [ ] Güvenlik negatif testleri
-- [ ] README (Türkçe, §20 başlıkları)
-- [ ] Temiz klonla kurulum doğrulaması
+- [x] Birim testleri (§19 listesi)
+- [x] Entegrasyon + uçtan uca (yerel test sitesi)
+- [x] Güvenlik negatif testleri
+- [x] README (Türkçe, §20 başlıkları)
+- [x] Temiz klonla kurulum doğrulaması
 
 ## Kabul kriterleri (§23)
 | # | Kriter | Durum | Kanıt |
 |---|---|---|---|
-| 1 | Yerelde açılır | [ ] | |
-| 2 | Proje oluşturma | [ ] | |
-| 3 | Tarama ayarları değiştirilebilir | [ ] | |
-| 4 | İzin onayı | [ ] | |
-| 5 | Gerçek siteyi tarama | [ ] | |
-| 6 | robots/kapsam uyumu | [ ] | |
-| 7 | HTML + render DOM analizi | [ ] | |
-| 8 | İlerleme takibi | [ ] | |
-| 9 | Gerçek veriden sorunlar | [ ] | |
-| 10 | Kanıt + çözüm önerisi | [ ] | |
-| 11 | URL detayları | [ ] | |
-| 12 | CSV + HTML rapor | [ ] | |
-| 13 | Eski taramalar korunur | [ ] | |
-| 14 | İki tarama karşılaştırma | [ ] | |
-| 15 | Güvenlik önlemleri | [ ] | |
-| 16 | Testler çalıştırıldı | [ ] | |
-| 17 | README eksiksiz | [ ] | |
+| 1 | Yerelde açılır | [x] | Temiz klonda `python run.py` → HTTP 200 (2026-10-09) |
+| 2 | Proje oluşturma | [x] | `test_web_basic::test_create_project_flow` |
+| 3 | Tarama ayarları değiştirilebilir | [x] | Proje formu + `test_db::test_project_crud_and_settings_roundtrip` |
+| 4 | İzin onayı | [x] | `test_web_e2e::test_crawl_requires_permission`, DB CHECK kısıtı |
+| 5 | Gerçek siteyi tarama | [~] | Gerçek HTTP ile yerel test sitesi taranıyor; üçüncü taraf canlı site izin olmadığı için taranmadı — kullanıcı kendi sitesinde doğrulamalı |
+| 6 | robots/kapsam uyumu | [x] | `test_crawler_e2e` (robots engeli, nofollow, dış alan, exclude, max_urls/derinlik), `test_robots_sitemap` |
+| 7 | HTML + render DOM analizi | [x] | `test_render` (JavaScript + hibrit, Chromium) |
+| 8 | İlerleme takibi | [x] | `/crawls/{id}/progress` HTMX; ekran görüntüsüyle doğrulandı |
+| 9 | Gerçek veriden sorunlar | [x] | `test_crawler_e2e::test_issues_and_prioritization` |
+| 10 | Kanıt + çözüm önerisi | [x] | Sorunlar ekranı, URL detayı, HTML rapor; `test_every_issue_has_translations` |
+| 11 | URL detayları | [x] | `test_web_e2e::test_full_ui_flow` (tüm URL detay sayfaları 200) |
+| 12 | CSV + HTML rapor | [x] | `test_reports`, `test_web_e2e::test_reports_compare_and_backup_routes` |
+| 13 | Eski taramalar korunur | [x] | `test_web_e2e::test_second_crawl_keeps_history` |
+| 14 | İki tarama karşılaştırma | [x] | `test_reports::test_compare_two_crawls`, `/compare` |
+| 15 | Güvenlik önlemleri | [x] | `test_security` (SSRF), CSRF/Host/XSS/SQLi/yol enjeksiyonu testleri |
+| 16 | Testler çalıştırıldı | [x] | 148/148 geçti |
+| 17 | README eksiksiz | [x] | README.md (§20 başlıklarının tamamı) |

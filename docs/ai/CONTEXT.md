@@ -18,9 +18,9 @@
 - Chromium: `.venv/Scripts/python -m playwright install chromium` (kurulu)
 
 ## Mevcut durum
-- **Aktif aşama:** Aşama 6 — Test ve son kontroller
-- **Son tamamlanan:** Aşama 5 (puan, HTML rapor, karşılaştırma, yedekleme)
-- **Sıradaki adım:** README (Türkçe, §20 başlıkları), temiz klonla run.py kurulum doğrulaması, kabul kriterleri tablosu, son kod kontrolü
+- **Aktif aşama:** v1.0.0 tamamlandı — bakım / yeni özellik
+- **Son tamamlanan:** Aşama 6 (README, temiz klon kurulumu, son kontroller)
+- **Sıradaki adım:** Kullanıcı geri bildirimi; olası geliştirmeler README "Bilinen eksikler" listesinde (GSC entegrasyonu, URL listesi içe aktarma, tam ISO hreflang tablosu, kimlik doğrulamalı tarama)
 
 ## Kod haritası (özet)
 Bkz. `DECISIONS.md` ADR-001. Giriş noktaları:

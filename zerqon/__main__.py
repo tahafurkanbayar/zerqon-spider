@@ -11,7 +11,18 @@ from zerqon import PRODUCT_NAME, SLOGAN, __version__
 from zerqon.config import get_settings
 
 
+def _utf8_stdio() -> None:
+    """Çıktı dosyaya/boruya yönlendirildiğinde Türkçe karakterler bozulmasın (Windows yerel kod sayfası)."""
+    for stream in (sys.stdout, sys.stderr):
+        if stream is not None and hasattr(stream, "reconfigure") and not stream.isatty():
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except (OSError, ValueError):
+                pass
+
+
 def main(argv: list[str] | None = None) -> int:
+    _utf8_stdio()
     parser = argparse.ArgumentParser(prog="zerqon", description=f"{PRODUCT_NAME} — {SLOGAN}")
     parser.add_argument("--host", help="Dinlenecek adres (varsayılan .env / 127.0.0.1)")
     parser.add_argument("--port", type=int, help="Port (varsayılan .env / 8765)")
