@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ t('nav.dashboard') }}{% endblock %}
+{% block crumbs %}{{ t('nav.dashboard') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ t('dashboard.title') }}</h1>
+    <p class="sub">{{ t('dashboard.subtitle') }}</p>
+  </div>
+  <div class="row">
+    <form hx-get="/" hx-target="#dashboard-body" hx-push-url="true" hx-trigger="change">
+      <label class="sr-only" for="project-filter">{{ t('dashboard.filter_project') }}</label>
+      <select id="project-filter" name="project">
+        <option value="">{{ t('dashboard.all_projects') }}</option>
+        {% for p in projects %}<option value="{{ p.id }}" {{ 'selected' if selected_project == p.id }}>{{ p.name }}</option>{% endfor %}
+      </select>
+    </form>
+    <a class="btn btn-primary" href="/projects/new">{{ icon('plus') }} {{ t('projects.new') }}</a>
+  </div>
+</div>
+<div id="dashboard-body">
+  {% include "partials/dashboard_body.html" %}
+</div>
+{% endblock %}

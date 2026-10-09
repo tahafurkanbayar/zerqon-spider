@@ -1,0 +1,157 @@
+{% import "macros.html" as m %}
+{% set lang = t.language %}
+{% set failed = totals.status_4xx + totals.status_5xx + totals.pages_failed %}
+<div class="grid grid-6">
+  <div class="card kpi accent">
+    <div class="label">{{ icon('projects', 14) }} {{ t('dashboard.projects') }}</div>
+    <div class="value">{{ totals.projects|number(lang) }}</div>
+    <div class="hint">{{ t('dashboard.crawled_projects', n=totals.crawled_projects) }}</div>
+  </div>
+  <div class="card kpi">
+    <div class="label">{{ icon('pages', 14) }} {{ t('dashboard.urls_crawled') }}</div>
+    <div class="value">{{ totals.pages_total|number(lang) }}</div>
+    <div class="hint">{{ t('dashboard.latest_crawls_only') }}</div>
+  </div>
+  <div class="card kpi">
+    <div class="label"><span class="st-2xx">{{ icon('check', 14) }}</span> {{ t('dashboard.successful') }}</div>
+    <div class="value st-2xx">{{ totals.status_2xx|number(lang) }}</div>
+    <div class="hint">HTTP 2xx</div>
+  </div>
+  <div class="card kpi">
+    <div class="label"><span class="st-5xx">{{ icon('x', 14) }}</span> {{ t('dashboard.failed') }}</div>
+    <div class="value st-5xx">{{ failed|number(lang) }}</div>
+    <div class="hint">{{ t('dashboard.failed_hint') }}</div>
+  </div>
+  <div class="card kpi">
+    <div class="label">{{ icon('crawl', 14) }} {{ t('dashboard.avg_response') }}</div>
+    <div class="value">{{ (totals.avg_response_ms|round|int|number(lang) ~ ' ms') if totals.avg_response_ms is not none else '—' }}</div>
+    <div class="hint">{{ t('dashboard.avg_response_hint') }}</div>
+  </div>
+  <div class="card kpi">
+    <div class="label">{{ icon('dashboard', 14) }} {{ t('score.label') }}</div>
+    <div class="value">{{ totals.health_score|round|int if totals.health_score is not none else '—' }}</div>
+    <div class="hint">{{ t('score.not_google') }}</div>
+  </div>
+</div>
+
+<div class="grid grid-4 mt">
+  {% for sev in ['critical', 'high', 'medium', 'low'] %}
+  <div class="card kpi">
+    <div class="label">{{ m.severity_badge(t, sev) }}</div>
+    <div class="value sev-text-{{ sev }}">{{ totals['issues_' ~ sev]|number(lang) }}</div>
+    <div class="hint">{{ t('dashboard.issue_instances') }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="grid grid-3 mt">
+  <div class="card">
+    <div class="card-head"><h2>{{ t('dashboard.status_distribution') }}</h2></div>
+    <div class="card-body">
+      {% if status_total %}
+      <div class="bars">
+        {% for key, cls in [('status_2xx', 'st-2xx'), ('status_3xx', 'st-3xx'), ('status_4xx', 'st-4xx'), ('status_5xx', 'st-5xx'), ('status_other', 'st-err')] %}
+        <div class="bar-row">
+          <span class="{{ cls }}">{{ t('dashboard.' ~ key) }}</span>
+          <div class="bar-track"><div class="bar-fill {{ cls }}" style="width:{{ (totals[key] / status_total * 100)|round(1) }}%;background:currentColor"></div></div>
+          <span class="right small">{{ totals[key]|number(lang) }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}{{ m.empty(t('dashboard.no_data')) }}{% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>{{ t('dashboard.indexability') }}</h2></div>
+    <div class="card-body">
+      {% set idx_total = totals.indexable + totals.non_indexable %}
+      {% if idx_total %}
+      <div class="stacked" role="img" aria-label="{{ t('dashboard.indexability') }}">
+        <span style="width:{{ (totals.indexable / idx_total * 100)|round(1) }}%;background:var(--ok)"></span>
+        <span style="width:{{ (totals.non_indexable / idx_total * 100)|round(1) }}%;background:var(--sev-high)"></span>
+      </div>
+      <div class="legend">
+        <span><i class="dot" style="color:var(--ok)"></i>{{ t('indexability.indexable') }}: <b>{{ totals.indexable|number(lang) }}</b></span>
+        <span><i class="dot" style="color:var(--sev-high)"></i>{{ t('indexability.non_indexable') }}: <b>{{ totals.non_indexable|number(lang) }}</b></span>
+      </div>
+      <p class="disclaimer mt">{{ icon('info', 14) }} {{ t('indexability.disclaimer') }}</p>
+      {% else %}{{ m.empty(t('dashboard.no_data')) }}{% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>{{ t('dashboard.active_crawls') }}</h2>{% if active %}<span class="pulse"></span>{% endif %}</div>
+    <div class="card-body" {% if active %}hx-get="/{{ '?project=' ~ selected_project if selected_project }}" hx-trigger="every 4s" hx-target="#dashboard-body" hx-select="#dashboard-body" hx-swap="outerHTML"{% endif %}>
+      {% if active %}
+      <ul class="list-plain">
+        {% for job in active %}
+        <li>
+          <div class="row" style="justify-content:space-between">
+            <a href="/crawls/{{ job.id }}"><b>{{ job.project_name }}</b> #{{ job.id }}</a>
+            {{ m.crawl_status(t, job.status) }}
+          </div>
+          <div class="small muted">{{ t('crawl.crawled_n', n=job.urls_crawled|number(lang)) }} · {{ t('crawl.queued_n', n=job.urls_queued|number(lang)) }}</div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}{{ m.empty(t('dashboard.no_active'), '', 'crawl') }}{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-2 mt">
+  <div class="card">
+    <div class="card-head"><h2>{{ t('dashboard.recent_crawls') }}</h2></div>
+    <div class="card-body flush table-wrap">
+      {% if recent %}
+      <table class="data">
+        <thead><tr><th>{{ t('crawl.project') }}</th><th>{{ t('crawl.status') }}</th><th class="num">URL</th><th class="num">{{ t('score.short') }}</th><th>{{ t('crawl.started') }}</th></tr></thead>
+        <tbody>
+        {% for job in recent %}
+          <tr>
+            <td><a href="/crawls/{{ job.id }}">{{ job.project_name }} <span class="muted">#{{ job.id }}</span></a></td>
+            <td>{{ m.crawl_status(t, job.status) }}</td>
+            <td class="num">{{ (job.pages_total if job.pages_total is not none else job.urls_crawled)|number(lang) }}</td>
+            <td class="num">{{ job.health_score|round|int if job.health_score is not none else '—' }}</td>
+            <td class="nowrap small">{{ (job.started_at or job.created_at)|dt }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}{{ m.empty(t('dashboard.no_crawls'), '', 'crawl') }}{% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>{{ t('dashboard.changes') }}</h2></div>
+    <div class="card-body flush table-wrap">
+      {% if trends %}
+      <table class="data">
+        <thead><tr><th>{{ t('crawl.project') }}</th><th class="num">{{ t('score.short') }}</th><th class="num">{{ t('dashboard.issues') }}</th><th class="num">URL</th><th></th></tr></thead>
+        <tbody>
+        {% for row in trends %}
+          <tr>
+            <td><a href="/projects/{{ row.project_id }}">{{ row.name }}</a></td>
+            {% if row.prev_id %}
+              {% set ds = (row.cur_score or 0) - (row.prev_score or 0) %}
+              {% set di = (row.cur_issues or 0) - (row.prev_issues or 0) %}
+              {% set dp = (row.cur_pages or 0) - (row.prev_pages or 0) %}
+              <td class="num">{{ row.cur_score|round|int }} <span class="small {{ 'delta-up' if ds > 0 else ('delta-down' if ds < 0) }}">{{ '%+d'|format(ds|round|int) }}</span></td>
+              <td class="num">{{ row.cur_issues|number(lang) }} <span class="small {{ 'delta-down' if di > 0 else ('delta-up' if di < 0) }}">{{ '%+d'|format(di) }}</span></td>
+              <td class="num">{{ row.cur_pages|number(lang) }} <span class="small muted">{{ '%+d'|format(dp) }}</span></td>
+              <td><a class="btn btn-sm" href="/compare?a={{ row.prev_id }}&b={{ row.cur_id }}">{{ icon('compare', 14) }} {{ t('compare.short') }}</a></td>
+            {% else %}
+              <td class="num">{{ row.cur_score|round|int if row.cur_score is not none else '—' }}</td>
+              <td class="num">{{ row.cur_issues|number(lang) }}</td>
+              <td class="num">{{ row.cur_pages|number(lang) }}</td>
+              <td class="small muted">{{ t('dashboard.no_previous') }}</td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}{{ m.empty(t('dashboard.no_data')) }}{% endif %}
+    </div>
+  </div>
+</div>

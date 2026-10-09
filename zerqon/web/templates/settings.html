@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}{{ t('nav.settings') }}{% endblock %}
+{% block crumbs %}{{ t('nav.settings') }}{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>{{ t('app_settings.title') }}</h1><p class="sub">{{ t('app_settings.subtitle') }}</p></div></div>
+<div class="grid grid-2">
+  <div class="card">
+    <div class="card-head"><h2>{{ t('app_settings.storage') }}</h2></div>
+    <div class="card-body">
+      <table class="kv">
+        <tr><th>{{ t('app_settings.data_dir') }}</th><td class="mono small break">{{ data_dir }}</td></tr>
+        <tr><th>{{ t('app_settings.db_path') }}</th><td class="mono small break">{{ db_path }}</td></tr>
+        <tr><th>{{ t('app_settings.logs_dir') }}</th><td class="mono small break">{{ logs_dir }}</td></tr>
+        <tr><th>{{ t('app_settings.bind') }}</th><td class="mono small">{{ bind }}</td></tr>
+        <tr><th>{{ t('app_settings.localhost_mode') }}</th><td>{{ t('common.enabled') if allow_localhost else t('common.disabled') }}<div class="help small muted">{{ t('app_settings.localhost_help') }}</div></td></tr>
+      </table>
+      <p class="disclaimer mt">{{ icon('info', 14) }} {{ t('welcome.privacy') }}</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>{{ t('app_settings.appearance') }}</h2></div>
+    <div class="card-body stack">
+      <form method="post" action="/preferences/language" class="field">
+        <input type="hidden" name="next" value="/settings">
+        <label for="lang2">{{ t('prefs.language') }}</label>
+        <div class="row">
+          <select id="lang2" name="language" style="max-width:220px">
+            <option value="tr" {{ 'selected' if lang == 'tr' }}>Türkçe</option>
+            <option value="en" {{ 'selected' if lang == 'en' }}>English</option>
+          </select>
+          <button class="btn" type="submit">{{ t('forms.save') }}</button>
+        </div>
+      </form>
+      <div class="field">
+        <span class="label-text">{{ t('prefs.theme') }}</span>
+        <div><button class="btn" type="button" data-theme-toggle>{{ icon('moon', 16) }} {{ t('prefs.theme_cycle') }}</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% block backup_section %}{% endblock %}
+{% endblock %}

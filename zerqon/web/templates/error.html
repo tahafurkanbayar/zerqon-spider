@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ t('errors.title') }}{% endblock %}
+{% block crumbs %}{{ t('errors.title') }}{% endblock %}
+{% block content %}
+<div class="card">
+  {% call m.empty(t(message_key), t('errors.hint'), 'issues') %}
+    {% if detail %}<p class="muted small">{{ detail }}</p>{% endif %}
+    <p class="muted small">HTTP {{ status }}</p>
+    <a class="btn" href="/">{{ t('nav.dashboard') }}</a>
+  {% endcall %}
+</div>
+{% endblock %}

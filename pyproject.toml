@@ -1,0 +1,19 @@
+[project]
+name = "zerqon-spider"
+version = "1.0.0"
+description = "Zerqon Spider — Advanced SEO Crawler & Auditor. Crawl Deeper. Discover More."
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "Taha Furkan Bayar" }]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "playwright: Chromium gerektiren testler (kurulu değilse atlanır)",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning:playwright.*",
+    "ignore:Using `httpx` with `starlette.testclient`",
+]

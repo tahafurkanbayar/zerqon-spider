@@ -1,0 +1,67 @@
+{% import "macros.html" as m %}
+<!doctype html>
+<html lang="{{ lang }}" data-theme="{{ theme }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ t('app.title') }}{% endblock %} · {{ PRODUCT_NAME }}</title>
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
+  <link rel="stylesheet" href="/static/css/app.css?v={{ VERSION }}">
+  <script src="/static/vendor/htmx.min.js" defer></script>
+  <script src="/static/js/app.js?v={{ VERSION }}" defer></script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" aria-label="{{ t('nav.main') }}">
+    <a class="brand" href="/">
+      <img src="/static/img/logo-mark.svg" alt="">
+      <div>
+        <div class="brand-name">Zerqon <span>Spider</span></div>
+        <div class="brand-tag" lang="en">{{ PRODUCT_DESCRIPTION }}</div>
+      </div>
+    </a>
+    <nav class="nav">
+      <a href="/" class="{{ 'active' if nav == 'dashboard' }}">{{ icon('dashboard') }} {{ t('nav.dashboard') }}</a>
+      <a href="/projects" class="{{ 'active' if nav == 'projects' }}">{{ icon('projects') }} {{ t('nav.projects') }}</a>
+      {% block sidebar_extra %}{% endblock %}
+      <div class="nav-label">{{ t('nav.system') }}</div>
+      <a href="/settings" class="{{ 'active' if nav == 'settings' }}">{{ icon('settings') }} {{ t('nav.settings') }}</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="slogan">{{ SLOGAN }}</div>
+      <div>{{ PRODUCT_NAME }} v{{ VERSION }} · {{ t('app.local_only') }}</div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="btn btn-ghost btn-icon menu-toggle" type="button" data-menu-toggle aria-label="{{ t('nav.menu') }}">{{ icon('pages') }}</button>
+      <div class="crumbs">{% block crumbs %}{% endblock %}</div>
+      <div class="context">{% block topbar_context %}{% endblock %}</div>
+      <div class="spacer"></div>
+      <div class="tools">
+        <form method="post" action="/preferences/language" class="row">
+          <input type="hidden" name="next" value="{{ request.url.path }}{{ '?' ~ request.url.query if request.url.query }}">
+          <label class="sr-only" for="lang-select">{{ t('prefs.language') }}</label>
+          <select id="lang-select" name="language" data-autosubmit style="width:auto;height:32px">
+            <option value="tr" {{ 'selected' if lang == 'tr' }}>Türkçe</option>
+            <option value="en" {{ 'selected' if lang == 'en' }}>English</option>
+          </select>
+          <noscript><button class="btn btn-sm" type="submit">OK</button></noscript>
+        </form>
+        <button class="btn btn-sm" type="button" data-theme-toggle title="{{ t('prefs.theme') }}">
+          {{ icon('moon', 16) }}
+          <span data-theme-label data-label-system="{{ t('prefs.theme_system') }}" data-label-light="{{ t('prefs.theme_light') }}" data-label-dark="{{ t('prefs.theme_dark') }}">{{ t('prefs.theme_' ~ theme) }}</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+      <div id="global-error" class="alert alert-error hidden" role="alert">{{ icon('issues') }} <div>{{ t('errors.request_failed') }}</div></div>
+      {% if msg is defined and msg %}{{ m.flash(t, msg) }}{% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+</body>
+</html>

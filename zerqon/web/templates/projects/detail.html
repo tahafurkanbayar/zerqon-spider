@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}{{ project.name }}{% endblock %}
+{% block crumbs %}<a href="/projects">{{ t('nav.projects') }}</a><span class="sep">/</span>{{ project.name }}{% endblock %}
+{% block topbar_context %}<span class="badge">{{ icon('globe', 12) }} {{ project.start_url|middle(48) }}</span>{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ project.name }}</h1>
+    <p class="sub"><a href="{{ project.start_url }}" target="_blank" rel="noopener noreferrer nofollow">{{ project.start_url }} {{ icon('external', 12) }}</a></p>
+    <p class="small muted">{{ t('projects.created') }}: {{ project.created_at|dt }} · {{ t('projects.last_crawl') }}: {{ project.last_crawl_at|dt }}</p>
+  </div>
+  <div class="row">
+    {% if active_job %}
+      <a class="btn btn-primary" href="/crawls/{{ active_job.id }}">{{ icon('crawl') }} {{ t('crawl.view_live') }}</a>
+    {% else %}
+      <a class="btn btn-primary" href="/projects/{{ project.id }}/crawl">{{ icon('play') }} {{ t('crawl.start') }}</a>
+    {% endif %}
+    <a class="btn" href="/projects/{{ project.id }}/edit">{{ icon('edit') }} {{ t('projects.edit') }}</a>
+    <form method="post" action="/projects/{{ project.id }}/delete" data-confirm="{{ t('projects.delete_confirm') }}">
+      <button class="btn btn-danger" type="submit" {{ 'disabled' if active_job }}>{{ icon('trash') }} {{ t('projects.delete') }}</button>
+    </form>
+  </div>
+</div>
+
+{% set latest = jobs|selectattr('health_score', 'ne', None)|first %}
+<div class="grid grid-3">
+  <div class="card">
+    <div class="card-head"><h2>{{ t('score.label') }}</h2>{% if latest %}<a class="small" href="/crawls/{{ latest.id }}">#{{ latest.id }}</a>{% endif %}</div>
+    <div class="card-body row" style="gap:20px">
+      {{ m.score_ring(t, latest.health_score if latest else None, latest.score_confidence if latest else None) }}
+      <div class="small">
+        {% if latest %}
+          {% for sev in ['critical', 'high', 'medium', 'low'] %}<div class="row" style="justify-content:space-between;min-width:150px">{{ m.severity_badge(t, sev) }}<b>{{ latest['issues_' ~ sev]|number(lang) }}</b></div>{% endfor %}
+        {% else %}<p class="muted">{{ t('projects.no_completed') }}</p>{% endif %}
+      </div>
+    </div>
+    <div class="card-body" style="padding-top:0"><p class="disclaimer">{{ icon('info', 14) }} {{ t('score.not_google_long') }}</p></div>
+  </div>
+  <div class="card span-2">
+    <div class="card-head"><h2>{{ t('projects.settings_summary') }}</h2><a class="small" href="/projects/{{ project.id }}/edit">{{ t('projects.edit') }}</a></div>
+    <div class="card-body">
+      <table class="kv">
+        <tr><th>{{ t('settings_form.max_urls') }}</th><td>{{ settings.max_urls|number(lang) }}</td></tr>
+        <tr><th>{{ t('settings_form.max_depth') }}</th><td>{{ settings.max_depth }}</td></tr>
+        <tr><th>{{ t('settings_form.concurrency') }} / {{ t('settings_form.delay_ms') }}</th><td>{{ settings.concurrency }} / {{ settings.delay_ms }} ms</td></tr>
+        <tr><th>{{ t('settings_form.render_mode') }}</th><td>{{ t('render_mode.' ~ settings.render_mode) }}</td></tr>
+        <tr><th>{{ t('settings_form.use_sitemaps') }}</th><td>{{ t('common.yes') if settings.use_sitemaps else t('common.no') }}</td></tr>
+        <tr><th>{{ t('settings_form.include_subdomains') }}</th><td>{{ t('common.yes') if settings.include_subdomains else t('common.no') }}</td></tr>
+        <tr><th>{{ t('settings_form.user_agent') }}</th><td class="mono small break">{{ settings.user_agent }}</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card mt">
+  <div class="card-head"><h2>{{ t('projects.history') }}</h2><span class="muted small">{{ t('projects.history_hint') }}</span></div>
+  {% if jobs %}
+  <form method="get" action="/compare">
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr>
+          <th>{{ t('compare.pick') }}</th><th>#</th><th>{{ t('crawl.status') }}</th><th>{{ t('crawl.started') }}</th><th>{{ t('crawl.finished') }}</th>
+          <th>{{ t('settings_form.render_mode') }}</th><th class="num">URL</th><th class="num">{{ t('indexability.indexable') }}</th>
+          <th class="num">{{ t('severity.critical') }}</th><th class="num">{{ t('severity.high') }}</th><th class="num">{{ t('score.short') }}</th><th></th>
+        </tr></thead>
+        <tbody>
+        {% for job in jobs %}
+          <tr>
+            <td>{% if job.health_score is not none %}<input type="checkbox" name="crawl" value="{{ job.id }}" aria-label="#{{ job.id }}">{% endif %}</td>
+            <td><a href="/crawls/{{ job.id }}">#{{ job.id }}</a></td>
+            <td>{{ m.crawl_status(t, job.status) }}{% if job.limit_reached %}<div class="small muted">{{ t('crawl.limit_reached') }}</div>{% endif %}</td>
+            <td class="small nowrap">{{ job.started_at|dt }}</td>
+            <td class="small nowrap">{{ job.finished_at|dt }}</td>
+            <td class="small">{{ t('render_mode.' ~ job.render_mode) }}</td>
+            <td class="num">{{ (job.pages_total if job.pages_total is not none else job.urls_crawled)|number(lang) }}</td>
+            <td class="num">{{ job.indexable|number(lang) }}</td>
+            <td class="num sev-text-critical">{{ job.issues_critical|number(lang) }}</td>
+            <td class="num sev-text-high">{{ job.issues_high|number(lang) }}</td>
+            <td class="num"><b>{{ job.health_score|round|int if job.health_score is not none else '—' }}</b></td>
+            <td class="nowrap">
+              <a class="btn btn-sm" href="/crawls/{{ job.id }}">{{ t('common.open') }}</a>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="pager"><span class="small muted">{{ t('compare.pick_help') }}</span><button class="btn btn-sm" type="submit">{{ icon('compare', 14) }} {{ t('compare.action') }}</button></div>
+  </form>
+  {% else %}
+    {% call m.empty(t('projects.no_crawls_title'), t('projects.no_crawls_text'), 'crawl') %}
+      <a class="btn btn-primary" href="/projects/{{ project.id }}/crawl">{{ icon('play') }} {{ t('crawl.start') }}</a>
+    {% endcall %}
+  {% endif %}
+</div>
+{% block project_extra %}{% endblock %}
+{% endblock %}

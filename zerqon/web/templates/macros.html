@@ -1,0 +1,100 @@
+{# Yeniden kullanılabilir arayüz parçaları. İş mantığı içermez. #}
+
+{% macro flash(t, key) -%}
+  {% if key.startswith('flash.') and t.has(key) %}
+  {% set kind = 'error' if key.endswith('_busy') or key.endswith('_failed') or key.endswith('_error') else 'success' %}
+  <div class="alert alert-{{ kind }}" role="status">{{ icon('check' if kind == 'success' else 'issues') }}<div>{{ t(key) }}</div></div>
+  {% endif %}
+{%- endmacro %}
+
+{% macro severity_badge(t, severity) -%}
+  <span class="badge sev-{{ severity }}"><span class="dot"></span>{{ t('severity.' ~ severity) }}</span>
+{%- endmacro %}
+
+{% macro status_badge(code, fetch_status=None, t=None) -%}
+  {% if code %}<span class="badge {{ code|status_class }}">{{ code }}</span>
+  {% elif t and fetch_status %}<span class="badge st-err">{{ t('fetch_status.' ~ fetch_status) }}</span>
+  {% else %}<span class="badge st-err">—</span>{% endif %}
+{%- endmacro %}
+
+{% macro crawl_status(t, status) -%}
+  <span class="badge status-{{ status }}">{% if status == 'running' %}<span class="pulse"></span>{% else %}<span class="dot"></span>{% endif %}{{ t('crawl_status.' ~ status) }}</span>
+{%- endmacro %}
+
+{% macro indexability(t, value) -%}
+  {% if value %}<span class="badge idx-{{ value }}">{{ t('indexability.' ~ value) }}</span>{% else %}<span class="muted">—</span>{% endif %}
+{%- endmacro %}
+
+{% macro score_ring(t, score, confidence=None, size=132) -%}
+  {% set pct = (score or 0) %}
+  {% set r = 52 %}
+  {% set c = 326.73 %}
+  {% set color = '#16a34a' if pct >= 80 else ('#ca8a04' if pct >= 60 else ('#ea580c' if pct >= 40 else '#e11d48')) %}
+  <div class="score-ring" style="width:{{ size }}px;height:{{ size }}px" role="img" aria-label="{{ t('score.label') }}: {{ score|round|int if score is not none else '—' }}">
+    <svg width="{{ size }}" height="{{ size }}" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="{{ r }}" fill="none" stroke="var(--surface-3)" stroke-width="10"/>
+      {% if score is not none %}
+      <circle cx="60" cy="60" r="{{ r }}" fill="none" stroke="{{ color }}" stroke-width="10" stroke-linecap="round"
+              stroke-dasharray="{{ c }}" stroke-dashoffset="{{ c - (c * pct / 100) }}"/>
+      {% endif %}
+    </svg>
+    <div class="score-text">
+      <b>{{ score|round|int if score is not none else '—' }}</b>
+      <small>/ 100</small>
+      {% if confidence %}<small>{{ t('score.confidence_' ~ confidence) }}</small>{% endif %}
+    </div>
+  </div>
+{%- endmacro %}
+
+{% macro empty(title, text='', icon_name='info') -%}
+  <div class="empty">
+    {{ icon(icon_name, 36) }}
+    <h3>{{ title }}</h3>
+    {% if text %}<p>{{ text }}</p>{% endif %}
+    {{ caller() if caller is defined }}
+  </div>
+{%- endmacro %}
+
+{% macro field_number(t, settings, errors, name, min=None, max=None, step=None) -%}
+  <div class="field {{ 'invalid' if errors.get(name) }}">
+    <label for="f-{{ name }}">{{ t('settings_form.' ~ name) }}</label>
+    <input type="number" id="f-{{ name }}" name="{{ name }}" value="{{ settings[name] }}"
+           {% if min is not none %}min="{{ min }}"{% endif %} {% if max is not none %}max="{{ max }}"{% endif %}
+           {% if step %}step="{{ step }}"{% endif %} required>
+    {% if t.has('settings_form.' ~ name ~ '_help') %}<span class="help">{{ t('settings_form.' ~ name ~ '_help') }}</span>{% endif %}
+    {% if errors.get(name) %}<span class="error">{{ errors[name] }}</span>{% endif %}
+  </div>
+{%- endmacro %}
+
+{% macro field_check(t, settings, name) -%}
+  <label class="check">
+    <input type="checkbox" name="{{ name }}" {{ 'checked' if settings[name] }}>
+    <span><span class="label-text">{{ t('settings_form.' ~ name) }}</span>
+    {% if t.has('settings_form.' ~ name ~ '_help') %}<br><span class="help muted small">{{ t('settings_form.' ~ name ~ '_help') }}</span>{% endif %}</span>
+  </label>
+{%- endmacro %}
+
+{% macro sort_th(t, label, column, current_sort, current_dir, base_params, target, num=False) -%}
+  {% set new_dir = 'asc' if (current_sort == column and current_dir == 'desc') else 'desc' %}
+  {% set params = dict(base_params, sort=column, dir=new_dir, page=1) %}
+  <th class="{{ 'num' if num }}">
+    <a href="?{{ params|urlencode }}" hx-get="?{{ params|urlencode }}" hx-target="{{ target }}" hx-push-url="true"
+       class="{{ 'sorted' if current_sort == column }}">{{ label }}{% if current_sort == column %}{{ ' ▲' if current_dir == 'asc' else ' ▼' }}{% endif %}</a>
+  </th>
+{%- endmacro %}
+
+{% macro pager(t, page, pages, total, base_params, target) -%}
+  <div class="pager">
+    <span class="muted small">{{ t('table.showing', page=page, pages=pages, total=total|number(t.language)) }}</span>
+    <div class="row">
+      {% if page > 1 %}
+        {% set p = dict(base_params, page=page - 1) %}
+        <a class="btn btn-sm" href="?{{ p|urlencode }}" hx-get="?{{ p|urlencode }}" hx-target="{{ target }}" hx-push-url="true">← {{ t('table.prev') }}</a>
+      {% endif %}
+      {% if page < pages %}
+        {% set p = dict(base_params, page=page + 1) %}
+        <a class="btn btn-sm" href="?{{ p|urlencode }}" hx-get="?{{ p|urlencode }}" hx-target="{{ target }}" hx-push-url="true">{{ t('table.next') }} →</a>
+      {% endif %}
+    </div>
+  </div>
+{%- endmacro %}

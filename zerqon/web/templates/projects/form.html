@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}{{ t('projects.edit') if project else t('projects.new') }}{% endblock %}
+{% block crumbs %}<a href="/projects">{{ t('nav.projects') }}</a><span class="sep">/</span>{{ project.name if project else t('projects.new') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ t('projects.edit') if project else t('projects.new') }}</h1><p class="sub">{{ t('projects.form_subtitle') }}</p></div>
+</div>
+{% if errors %}<div class="alert alert-error" role="alert">{{ icon('issues') }}<div>{{ t('forms.fix_errors') }}{% if errors.get('__all__') %}<br>{{ errors['__all__'] }}{% endif %}</div></div>{% endif %}
+<form method="post" class="card card-body" novalidate>
+  <fieldset>
+    <legend>{{ t('projects.section_basic') }}</legend>
+    <div class="form-grid">
+      <div class="field {{ 'invalid' if errors.get('name') }}">
+        <label for="f-name">{{ t('projects.name') }}</label>
+        <input type="text" id="f-name" name="name" value="{{ form.name or '' }}" maxlength="120" required autofocus>
+        {% if errors.get('name') %}<span class="error">{{ errors.name }}</span>{% endif %}
+      </div>
+      <div class="field {{ 'invalid' if errors.get('start_url') }}" style="grid-column: span 2">
+        <label for="f-start_url">{{ t('projects.start_url') }}</label>
+        <input type="url" id="f-start_url" name="start_url" value="{{ form.start_url or '' }}" placeholder="https://www.example.com/" maxlength="2000" required>
+        <span class="help">{{ t('projects.start_url_help') }}</span>
+        {% if errors.get('start_url') %}<span class="error">{{ errors.start_url }}</span>{% endif %}
+      </div>
+    </div>
+  </fieldset>
+  {% include "partials/settings_fields.html" %}
+  <div class="form-actions">
+    <a class="btn" href="{{ '/projects/' ~ project.id if project else '/projects' }}">{{ t('forms.cancel') }}</a>
+    <button class="btn btn-primary" type="submit">{{ icon('check') }} {{ t('forms.save') }}</button>
+  </div>
+</form>
+{% endblock %}

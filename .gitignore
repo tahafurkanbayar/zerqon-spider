@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Ortam
+.venv/
+venv/
+.env
+
+# Uygulama verisi (veritabanı, loglar, raporlar, yedekler)
+data/
+
+# Editör / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

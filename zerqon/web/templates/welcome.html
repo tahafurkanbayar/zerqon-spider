@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ t('welcome.title') }}{% endblock %}
+{% block crumbs %}{{ t('nav.dashboard') }}{% endblock %}
+{% block content %}
+<section class="hero">
+  <img src="/static/img/logo-mark.svg" alt="{{ PRODUCT_NAME }}">
+  <h1>{{ PRODUCT_NAME }}</h1>
+  <div class="tagline">{{ SLOGAN }}</div>
+  <p>{{ t('welcome.intro') }}</p>
+  <div class="row mt">
+    <a class="btn btn-primary" href="/projects/new">{{ icon('plus') }} {{ t('welcome.cta') }}</a>
+    <a class="btn" href="/settings">{{ icon('settings') }} {{ t('nav.settings') }}</a>
+  </div>
+</section>
+<div class="feature-list">
+  <div class="card feature">{{ icon('crawl', 22) }}<h3 class="mt">{{ t('welcome.f1_title') }}</h3><p class="muted">{{ t('welcome.f1_text') }}</p></div>
+  <div class="card feature">{{ icon('issues', 22) }}<h3 class="mt">{{ t('welcome.f2_title') }}</h3><p class="muted">{{ t('welcome.f2_text') }}</p></div>
+  <div class="card feature">{{ icon('report', 22) }}<h3 class="mt">{{ t('welcome.f3_title') }}</h3><p class="muted">{{ t('welcome.f3_text') }}</p></div>
+</div>
+<p class="disclaimer mt">{{ icon('info', 14) }} {{ t('welcome.privacy') }}</p>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% import "macros.html" as m %}
+{% set s = settings %}
+<fieldset>
+  <legend>{{ t('settings_form.section_limits') }}</legend>
+  <div class="form-grid">
+    {{ m.field_number(t, s, errors, 'max_urls', 1, 500000) }}
+    {{ m.field_number(t, s, errors, 'max_depth', 0, 100) }}
+    {{ m.field_number(t, s, errors, 'concurrency', 1, 50) }}
+    {{ m.field_number(t, s, errors, 'delay_ms', 0, 60000) }}
+    {{ m.field_number(t, s, errors, 'timeout_seconds', 1, 120, 'any') }}
+    {{ m.field_number(t, s, errors, 'max_retries', 0, 10) }}
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend>{{ t('settings_form.section_scope') }}</legend>
+  <div class="form-grid">
+    <div class="field {{ 'invalid' if errors.get('user_agent') }}" style="grid-column: 1 / -1">
+      <label for="f-user_agent">{{ t('settings_form.user_agent') }}</label>
+      <input type="text" id="f-user_agent" name="user_agent" value="{{ s.user_agent }}" maxlength="400" required>
+      {% if errors.get('user_agent') %}<span class="error">{{ errors.user_agent }}</span>{% endif %}
+    </div>
+    <div class="field {{ 'invalid' if errors.get('include_patterns') }}">
+      <label for="f-include">{{ t('settings_form.include_patterns') }}</label>
+      <textarea id="f-include" name="include_patterns" placeholder="^https://example\.com/blog/">{{ s.include_patterns }}</textarea>
+      <span class="help">{{ t('settings_form.patterns_help') }}</span>
+      {% if errors.get('include_patterns') %}<span class="error">{{ errors.include_patterns }}</span>{% endif %}
+    </div>
+    <div class="field {{ 'invalid' if errors.get('exclude_patterns') }}">
+      <label for="f-exclude">{{ t('settings_form.exclude_patterns') }}</label>
+      <textarea id="f-exclude" name="exclude_patterns" placeholder="/wp-admin/&#10;\?replytocom=">{{ s.exclude_patterns }}</textarea>
+      <span class="help">{{ t('settings_form.patterns_help') }}</span>
+      {% if errors.get('exclude_patterns') %}<span class="error">{{ errors.exclude_patterns }}</span>{% endif %}
+    </div>
+    <div class="stack">
+      {{ m.field_check(t, s, 'include_subdomains') }}
+      {{ m.field_check(t, s, 'use_sitemaps') }}
+      {{ m.field_check(t, s, 'check_images') }}
+      {{ m.field_check(t, s, 'allow_localhost') }}
+    </div>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend>{{ t('settings_form.section_render') }}</legend>
+  <div class="form-grid">
+    <div class="field" style="grid-column: span 2">
+      <span class="label-text">{{ t('settings_form.render_mode') }}</span>
+      <div class="segmented" role="radiogroup">
+        {% for mode in ['standard', 'hybrid', 'javascript'] %}
+        <label><input type="radio" name="render_mode" value="{{ mode }}" {{ 'checked' if s.render_mode == mode }}><span>{{ t('render_mode.' ~ mode) }}</span></label>
+        {% endfor %}
+      </div>
+      <span class="help">{{ t('settings_form.render_mode_help') }}</span>
+    </div>
+    {{ m.field_number(t, s, errors, 'max_render_pages', 0, 100000) }}
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend>{{ t('settings_form.section_thresholds') }}</legend>
+  <p class="disclaimer">{{ icon('info', 14) }} {{ t('settings_form.thresholds_disclaimer') }}</p>
+  <div class="form-grid">
+    {{ m.field_number(t, s, errors, 'title_min_chars', 1, 500) }}
+    {{ m.field_number(t, s, errors, 'title_max_chars', 1, 500) }}
+    {{ m.field_number(t, s, errors, 'description_min_chars', 1, 1000) }}
+    {{ m.field_number(t, s, errors, 'description_max_chars', 1, 1000) }}
+    {{ m.field_number(t, s, errors, 'min_word_count', 0, 100000) }}
+    {{ m.field_number(t, s, errors, 'max_url_length', 10, 10000) }}
+    {{ m.field_number(t, s, errors, 'large_image_bytes', 1024, 104857600) }}
+    {{ m.field_number(t, s, errors, 'deep_page_depth', 1, 100) }}
+  </div>
+</fieldset>
