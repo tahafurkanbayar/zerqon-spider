@@ -992,3 +992,4 @@ Varsayılan arayüz dili Türkçe olmalıdır. İngilizce dil desteği korunmal�
 - 2026-10-09: GitHub reposu **public** olacak. Her aşama commit'lenip push'lanacak.
 - 2026-10-09: Commit'ler **Taha Furkan Bayar <tahafurkanbayar@gmail.com>** adına atılacak.
 - 2026-10-09: Prompt ve ilerlemeler teknik olarak organize edilmiş md dosyalarında tutulacak (bkz. `docs/ai/`).
+- 2026-10-09: Commit mesajlarına **Co-Authored-By / AI atıf satırı eklenmez**; commit'lerde yalnızca kullanıcı görünür.

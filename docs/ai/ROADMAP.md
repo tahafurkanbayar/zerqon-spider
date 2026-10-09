@@ -16,15 +16,15 @@
 - [x] `run.py` tek komutla başlatma
 
 ## Aşama 2 — Tarama motoru
-- [ ] URL normalizasyonu / `url_key`
-- [ ] Kapsam (alan adı, alt alan, include/exclude)
-- [ ] SSRF koruması + localhost modu
-- [ ] robots.txt (RFC 9309 + joker)
-- [ ] Sitemap + sitemap index + gzip, XXE-güvenli
-- [ ] Fetcher: async, boyut limiti, retry, 429/503 backoff, hız sınırlayıcı
-- [ ] Frontier + checkpoint + devam ettirme
-- [ ] Playwright render (havuz, limit, ana belge fulfill)
-- [ ] Engine + Manager (thread, stop, interrupted işaretleme)
+- [x] URL normalizasyonu / `url_key`
+- [x] Kapsam (alan adı, alt alan, include/exclude)
+- [x] SSRF koruması + localhost modu
+- [x] robots.txt (RFC 9309 + joker)
+- [x] Sitemap + sitemap index + gzip, XXE-güvenli
+- [x] Fetcher: async, boyut limiti, retry, 429/503 backoff, hız sınırlayıcı
+- [x] Frontier + checkpoint + devam ettirme
+- [x] Playwright render (havuz, limit, ana belge fulfill)
+- [x] Engine + Manager (thread, stop, interrupted işaretleme)
 
 ## Aşama 3 — SEO analizleri
 - [ ] HTML parser (title, meta, headings, links, images, canonical, hreflang, OG/Twitter, metin)

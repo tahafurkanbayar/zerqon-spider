@@ -69,10 +69,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     setup_logging(settings.logs_dir, settings.log_level)
     db = init_database(settings)
 
+    from zerqon.crawler.manager import CrawlManager
+
+    manager = CrawlManager(db, settings)
+
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         logger.info("%s %s başlatıldı — veri dizini: %s", PRODUCT_NAME, __version__, settings.resolved_data_dir)
         yield
+        manager.shutdown()
 
     app = FastAPI(
         title=PRODUCT_NAME,
@@ -84,6 +89,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.state.settings = settings
     app.state.db = db
+    app.state.manager = manager
 
     @app.middleware("http")
     async def request_context(

@@ -18,9 +18,9 @@
 - Chromium: `.venv/Scripts/python -m playwright install chromium` (kurulu)
 
 ## Mevcut durum
-- **Aktif aşama:** Aşama 2 — Tarama motoru
-- **Son tamamlanan:** Aşama 1 (altyapı, DB, i18n, UI iskeleti, run.py)
-- **Sıradaki adım:** crawler/ (scope, security, robots, sitemap, fetcher, frontier, renderer, engine, manager)
+- **Aktif aşama:** Aşama 3 — SEO analizleri
+- **Son tamamlanan:** Aşama 2 (tarama motoru, parser, render, stop/resume)
+- **Sıradaki adım:** analysis/ (issues registry, page checks, indexability, site checks, prioritization) → engine `analyzer` + `finalize_crawl` hatlarına bağlanır
 
 ## Kod haritası (özet)
 Bkz. `DECISIONS.md` ADR-001. Giriş noktaları:

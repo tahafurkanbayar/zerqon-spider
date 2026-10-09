@@ -92,3 +92,13 @@ Hibrit modda render tetikleyicileri: düşük ham kelime sayısı, boş SPA kök
 **Durum:** Kabul
 **Bağlam:** Geliştirme makinesinde sistem Python'u 3.15; prompt 3.12 istiyor.
 **Karar:** Hedef 3.12 (3.13 de desteklenir). `run.py` uygun yorumlayıcıyı bulur (mevcut yorumlayıcı → `py -3.12` → `python3.12` → `uv python find 3.12`), `.venv`'i onunla kurar. Geliştirmede `.venv` uv ile yönetilen CPython 3.12 ile oluşturuldu.
+
+## ADR-017 — Sitemap URL'leri ertelenir; nofollow takip edilmez
+**Durum:** Kabul · 2026-10-09
+**Bağlam:** Sitemap URL'leri kuyruğa ilk eklenirse `max_urls` sınırını doldurup bağlantı yapısının taranmasını engelleyebilir.
+**Karar:** Sitemap URL'leri `sitemap_urls` tablosuna yazılır ve frontier'da *ertelenir*; bağlantı tabanlı BFS kuyruğu boşalınca kuyruğa alınır (kaynak=`sitemap`). Böylece yetim sayfa adayları da taranır ama site yapısı önceliklidir.
+`rel=nofollow` bağlantılar, meta robots/X-Robots-Tag `nofollow`/`none` içeren sayfaların bağlantıları **takip edilmez** (kayıt altına alınır). Canonical ve hreflang hedefleri (kapsam içindeyse) durumlarını doğrulamak için kuyruğa alınır.
+
+## ADR-018 — SSRF ile engellenen host
+**Durum:** Kabul · 2026-10-09
+**Karar:** robots.txt isteği güvenlik politikasıyla engellenirse o origin `RobotsStatus.BLOCKED` olur ve sayfaları `blocked_security` olarak kaydedilir (robots engeli gibi gösterilmez). Hata kodları `fetcher.classify_exception` ile normalize edilir: `dns_error, timeout, ssl_error, connection_refused, connect_error, protocol_error, network_error, blocked_security`.
