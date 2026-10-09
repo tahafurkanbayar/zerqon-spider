@@ -137,7 +137,7 @@
               {% set ds = (row.cur_score or 0) - (row.prev_score or 0) %}
               {% set di = (row.cur_issues or 0) - (row.prev_issues or 0) %}
               {% set dp = (row.cur_pages or 0) - (row.prev_pages or 0) %}
-              <td class="num">{{ row.cur_score|round|int }} <span class="small {{ 'delta-up' if ds > 0 else ('delta-down' if ds < 0) }}">{{ '%+d'|format(ds|round|int) }}</span></td>
+              <td class="num">{{ row.cur_score|round|int if row.cur_score is not none else '—' }}{% if row.cur_score is not none and row.prev_score is not none %} <span class="small {{ 'delta-up' if ds > 0 else ('delta-down' if ds < 0) }}">{{ '%+d'|format(ds|round|int) }}</span>{% endif %}</td>
               <td class="num">{{ row.cur_issues|number(lang) }} <span class="small {{ 'delta-down' if di > 0 else ('delta-up' if di < 0) }}">{{ '%+d'|format(di) }}</span></td>
               <td class="num">{{ row.cur_pages|number(lang) }} <span class="small muted">{{ '%+d'|format(dp) }}</span></td>
               <td><a class="btn btn-sm" href="/compare?a={{ row.prev_id }}&b={{ row.cur_id }}">{{ icon('compare', 14) }} {{ t('compare.short') }}</a></td>

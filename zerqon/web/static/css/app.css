@@ -355,6 +355,10 @@ details.issue-group[open] > summary { background: var(--surface-2); }
   .sidebar { position: fixed; z-index: 50; width: 260px; transform: translateX(-100%); transition: transform .2s; }
   .sidebar.open { transform: none; box-shadow: var(--shadow-lg); }
   .btn.menu-toggle { display: inline-flex; }
+  .topbar { gap: 8px; }
+  .topbar .context, [data-theme-label] { display: none; }
+  .topbar .crumbs { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; }
+  .topbar .crumbs a, .topbar .crumbs .sep { display: none; }
   .grid-2, .grid-3, .grid-4, .grid-6 { grid-template-columns: 1fr; }
   .span-2 { grid-column: auto; }
   .content { padding: 16px; }

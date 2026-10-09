@@ -318,14 +318,12 @@ class CrawlEngine:
             self._flush(force=True)
 
     async def _wait_for_drain(self) -> None:
+        # Durdurma isteğinde kuyruktaki öğeler işçilerce hızla atlanır (DB'de 'pending' kalır → devam ettirilebilir)
         join = asyncio.create_task(self.frontier.queue.join())
         while not join.done():
-            done, _ = await asyncio.wait({join}, timeout=FLUSH_INTERVAL_S)
+            await asyncio.wait({join}, timeout=FLUSH_INTERVAL_S)
             self.stats.queued = self.frontier.queue.qsize()
             self._flush()
-            if self._stopping:
-                # Kuyruktaki öğeler işçiler tarafından hızla atlanır (DB'de 'pending' kalır → devam ettirilebilir)
-                pass
         await join
 
     async def _worker(self) -> None:

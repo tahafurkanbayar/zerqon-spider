@@ -41,9 +41,9 @@
     <div class="score-text">
       <b>{{ score|round|int if score is not none else '—' }}</b>
       <small>/ 100</small>
-      {% if confidence %}<small>{{ t('score.confidence_' ~ confidence) }}</small>{% endif %}
     </div>
   </div>
+  {% if confidence %}<div class="small muted" style="margin-top:4px">{{ t('score.confidence_' ~ confidence) }}</div>{% endif %}
 {%- endmacro %}
 
 {% macro empty(title, text='', icon_name='info') -%}
