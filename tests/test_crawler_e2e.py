@@ -10,6 +10,7 @@ from typing import Any
 import pytest
 
 from zerqon.analysis.finalize import finalize_crawl
+from zerqon.analysis.runner import PageAnalysisRunner
 from zerqon.config import Settings
 from zerqon.crawler.engine import CrawlEngine, CrawlStats
 from zerqon.db.connection import Database
@@ -49,7 +50,7 @@ def run_crawl(
 
     engine = CrawlEngine(
         db, crawl_id, base + "/", settings, app_settings, stop, stats,
-        resume=resume_id is not None, finalizer=finalize_crawl,
+        resume=resume_id is not None, finalizer=finalize_crawl, analyzer=PageAnalysisRunner(),
     )
     if stop_after is not None:
         def watcher() -> None:
@@ -226,3 +227,37 @@ def test_429_backoff_and_retry(db: Database, settings: Settings, site: str) -> N
     assert status == 200
     assert attempts == 2
     assert penalty > 0  # 429 sonrası istek aralığı artırıldı
+
+
+def test_issues_and_prioritization(db: Database, settings: Settings, site: str) -> None:
+    crawl_id, status, _ = run_crawl(db, settings, site, check_images=True)
+    assert status == "completed"
+    with db.session() as conn:
+        rows = conn.execute(
+            "SELECT i.code, i.severity, i.base_severity, i.evidence, p.url FROM issues i"
+            " LEFT JOIN pages p ON p.id = i.page_id WHERE i.crawl_id = ?",
+            (crawl_id,),
+        ).fetchall()
+        by_code: dict[str, list[sqlite3.Row]] = {}
+        for r in rows:
+            by_code.setdefault(r["code"], []).append(r)
+        for expected in (
+            "broken_internal_link", "redirect_chain", "redirect_loop", "status_4xx", "status_5xx",
+            "orphan_candidate", "sitemap_url_noindex", "title_duplicate", "structured_data_syntax_error",
+            "image_broken", "image_too_large", "blocked_by_robots", "internal_link_to_redirect",
+        ):
+            assert expected in by_code, expected
+        # Kanıt dolu olmalı
+        assert all(r["evidence"] for r in by_code["broken_internal_link"])
+        # Sitemap'teki önemli sayfada noindex → high (muhtemelen istenmeyen)
+        noindex = {r["url"].replace(site, ""): r["severity"] for r in by_code["noindex"]}
+        assert noindex["/noindex-page"] == "high"
+        assert noindex["/xrobots"] == "info"
+        # Indexlenemeyen sayfada meta sorunu bir seviye düşer
+        canon_desc = [r for r in by_code.get("description_missing", []) if r["url"].endswith("/canonical-other")]
+        assert canon_desc and canon_desc[0]["severity"] == "low"
+        # Sayfa sorun sayıları hesaplanmış
+        home = conn.execute(
+            "SELECT issues_count FROM pages WHERE crawl_id = ? AND url = ?", (crawl_id, site + "/")
+        ).fetchone()
+        assert home["issues_count"] >= 1

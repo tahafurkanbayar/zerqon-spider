@@ -27,12 +27,12 @@
 - [x] Engine + Manager (thread, stop, interrupted işaretleme)
 
 ## Aşama 3 — SEO analizleri
-- [ ] HTML parser (title, meta, headings, links, images, canonical, hreflang, OG/Twitter, metin)
-- [ ] Structured data (JSON-LD, Microdata, RDFa)
-- [ ] Issue registry + page checks (A–M)
-- [ ] Indexability hesaplayıcı
-- [ ] Site checks (yinelenenler, kırık linkler, canonical hedefleri, redirect zincirleri, hreflang karşılıklılık, yetim aday, sitemap tutarlılığı, benzer içerik)
-- [ ] Önceliklendirme motoru
+- [x] HTML parser (title, meta, headings, links, images, canonical, hreflang, OG/Twitter, metin)
+- [x] Structured data (JSON-LD, Microdata, RDFa)
+- [x] Issue registry + page checks (A–M)
+- [x] Indexability hesaplayıcı
+- [x] Site checks (yinelenenler, kırık linkler, canonical hedefleri, redirect zincirleri, hreflang karşılıklılık, yetim aday, sitemap tutarlılığı, benzer içerik)
+- [x] Önceliklendirme motoru
 
 ## Aşama 4 — Yönetim paneli
 - [ ] Dashboard

@@ -102,3 +102,12 @@ Hibrit modda render tetikleyicileri: düşük ham kelime sayısı, boş SPA kök
 ## ADR-018 — SSRF ile engellenen host
 **Durum:** Kabul · 2026-10-09
 **Karar:** robots.txt isteği güvenlik politikasıyla engellenirse o origin `RobotsStatus.BLOCKED` olur ve sayfaları `blocked_security` olarak kaydedilir (robots engeli gibi gösterilmez). Hata kodları `fetcher.classify_exception` ile normalize edilir: `dns_error, timeout, ssl_error, connection_refused, connect_error, protocol_error, network_error, blocked_security`.
+
+## ADR-019 — hreflang doğrulaması biçim tabanlı
+**Durum:** Kabul · 2026-10-09
+**Bağlam:** Tam ISO 639-1/3166-1 tablolarının koda gömülmesi denendi; çıktı üretimi engellendi ve bakım yükü yüksek.
+**Karar:** `analysis/lang_codes.py` BCP 47 biçimini (`dil[-Yazı][-BÖLGE|UN M.49]`, `x-default`) ve sık yapılan hataları (en-uk, jp, us, …) doğrular. Var olmayan ama biçime uyan kodlar (ör. `qq`) yakalanmaz — README "Bilinen eksikler"de belirtilir.
+
+## ADR-020 — Çeviri dosyaları parçalı
+**Durum:** Kabul · 2026-10-09
+**Karar:** `load_catalog(lang)` `<lang>.json` + `<lang>.*.json` dosyalarını birleştirir; çakışan anahtar hata verir. Sorun metinleri `issues-a/b` parçalarında.

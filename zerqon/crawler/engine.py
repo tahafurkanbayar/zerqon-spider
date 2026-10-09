@@ -20,6 +20,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from zerqon.analysis.context import PageContext
 from zerqon.config import Settings
 from zerqon.crawler.fetcher import FetchResult, Fetcher
 from zerqon.crawler.frontier import Frontier, FrontierItem
@@ -92,26 +93,6 @@ class CrawlStats:
             "elapsed": round(self.elapsed, 1),
             "rate": self.rate,
         }
-
-
-@dataclass
-class PageContext:
-    """Sayfa düzeyi analiz için girdi (analysis.runner tarafından kullanılır)."""
-
-    url: str
-    key: str
-    depth: int
-    fetch: FetchResult
-    raw: ParsedPage | None
-    rendered: ParsedPage | None
-    settings: CrawlSettingsModel
-    scope: CrawlScope
-    x_robots_tag: str
-    render_error: str | None = None
-
-    @property
-    def effective(self) -> ParsedPage | None:
-        return self.rendered or self.raw
 
 
 class PageAnalyzer(Protocol):

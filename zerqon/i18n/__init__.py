@@ -30,9 +30,17 @@ def _flatten(data: dict[str, Any], prefix: str = "") -> dict[str, str]:
 
 @lru_cache(maxsize=None)
 def load_catalog(language: str) -> dict[str, str]:
-    path = LOCALES_DIR / f"{language}.json"
-    with path.open(encoding="utf-8") as fh:
-        return _flatten(json.load(fh))
+    """`<dil>.json` + `<dil>.<parça>.json` dosyalarını birleştirir (ör. tr.issues-a.json)."""
+    paths = [LOCALES_DIR / f"{language}.json", *sorted(LOCALES_DIR.glob(f"{language}.*.json"))]
+    catalog: dict[str, str] = {}
+    for path in paths:
+        with path.open(encoding="utf-8") as fh:
+            part = _flatten(json.load(fh))
+        duplicate = set(part) & set(catalog)
+        if duplicate:
+            raise ValueError(f"{path.name}: yinelenen çeviri anahtarları {sorted(duplicate)[:5]}")
+        catalog.update(part)
+    return catalog
 
 
 def normalize_language(language: str | None) -> str:

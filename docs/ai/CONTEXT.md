@@ -18,9 +18,9 @@
 - Chromium: `.venv/Scripts/python -m playwright install chromium` (kurulu)
 
 ## Mevcut durum
-- **Aktif aşama:** Aşama 3 — SEO analizleri
-- **Son tamamlanan:** Aşama 2 (tarama motoru, parser, render, stop/resume)
-- **Sıradaki adım:** analysis/ (issues registry, page checks, indexability, site checks, prioritization) → engine `analyzer` + `finalize_crawl` hatlarına bağlanır
+- **Aktif aşama:** Aşama 4 — Yönetim paneli
+- **Son tamamlanan:** Aşama 3 (issue registry, page+site checks, indexability, önceliklendirme)
+- **Sıradaki adım:** web/routes/crawls.py (başlat+izin, canlı ilerleme, stop/resume), URL tablosu, URL detay, sorunlar ekranı; analiz kategorileri/indexability nedenleri/olay kodları için çeviriler
 
 ## Kod haritası (özet)
 Bkz. `DECISIONS.md` ADR-001. Giriş noktaları:

@@ -34,6 +34,7 @@ class LinkData:
     rel: str
     nofollow: bool
     kind: str = "a"
+    image_only: bool = False
 
 
 @dataclass
@@ -202,9 +203,11 @@ def parse_html(html_text: str, page_url: str, *, robots_meta_names: tuple[str, .
             continue
         rel = _attr(el, "rel").lower()
         anchor = _clip(el.text_content(), MAX_ANCHOR)
+        image_only = False
         if not anchor:
-            img = el.find(".//img[@alt]")
-            if img is not None:
+            img = el.find(".//img")
+            image_only = img is not None
+            if img is not None and (img.get("alt") or "").strip():
                 anchor = _clip(img.get("alt"), MAX_ANCHOR)
             elif el.get("aria-label"):
                 anchor = _clip(el.get("aria-label"), MAX_ANCHOR)
@@ -218,6 +221,7 @@ def parse_html(html_text: str, page_url: str, *, robots_meta_names: tuple[str, .
                 rel=rel[:100],
                 nofollow="nofollow" in rel.split(),
                 kind=el.tag,
+                image_only=image_only,
             )
         )
 
