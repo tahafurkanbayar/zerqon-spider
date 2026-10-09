@@ -12,6 +12,7 @@ from zerqon.analysis.context import SiteContext
 from zerqon.analysis.indexability import apply_indexability
 from zerqon.analysis.prioritization import prioritize
 from zerqon.analysis.runner import run_site_checks
+from zerqon.analysis.scoring import compute_score, snapshot_fields
 from zerqon.analysis.snapshot import save_snapshot
 from zerqon.crawler.postprocess import compute_graph
 from zerqon.crawler.store import CrawlStore
@@ -27,4 +28,4 @@ def finalize_crawl(conn: sqlite3.Connection, crawl_id: int, settings: CrawlSetti
     apply_indexability(conn, crawl_id)
     run_site_checks(conn, crawl_id, SiteContext(conn, crawl_id, settings, start_url), store)
     prioritize(conn, crawl_id)
-    save_snapshot(conn, crawl_id)
+    save_snapshot(conn, crawl_id, snapshot_fields(compute_score(conn, crawl_id)))

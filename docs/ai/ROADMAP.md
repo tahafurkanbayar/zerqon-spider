@@ -44,11 +44,11 @@
 - [x] Sorunlar ekranı
 
 ## Aşama 5 — Raporlama ve geçmiş
-- [ ] CSV dışa aktarma (10 tür, BOM, formula injection koruması)
-- [ ] Bağımsız HTML raporu
-- [ ] Sağlık puanı + güvenilirlik
-- [ ] Tarama karşılaştırması
-- [ ] Yedekleme / geri yükleme
+- [x] CSV dışa aktarma (10 tür, BOM, formula injection koruması)
+- [x] Bağımsız HTML raporu
+- [x] Sağlık puanı + güvenilirlik
+- [x] Tarama karşılaştırması
+- [x] Yedekleme / geri yükleme
 
 ## Aşama 6 — Test ve son kontroller
 - [ ] Birim testleri (§19 listesi)

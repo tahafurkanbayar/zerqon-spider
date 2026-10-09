@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}{{ t('compare.title') }}{% endblock %}
+{% block crumbs %}<a href="/projects">{{ t('nav.projects') }}</a>{% if project %}<span class="sep">/</span><a href="/projects/{{ project.id }}">{{ project.name }}</a>{% endif %}<span class="sep">/</span>{{ t('compare.title') }}{% endblock %}
+{% block content %}
+{% if error %}
+<div class="card">{% call m.empty(t('compare.error_' ~ error), t('compare.pick_help'), 'compare') %}<a class="btn" href="/projects">{{ t('nav.projects') }}</a>{% endcall %}</div>
+{% else %}
+{% set lang = t.language %}
+<div class="page-head">
+  <div>
+    <h1>{{ t('compare.title') }}: {{ project.name }}</h1>
+    <p class="sub"><a href="/crawls/{{ c.a.id }}">{{ t('crawl.crawl_n', n=c.a.id) }}</a> ({{ c.a.started_at|dt }}) → <a href="/crawls/{{ c.b.id }}">{{ t('crawl.crawl_n', n=c.b.id) }}</a> ({{ c.b.started_at|dt }})</p>
+  </div>
+</div>
+
+{% if c.warnings %}
+<div class="alert alert-warn">{{ icon('issues') }}<div><b>{{ t('compare.warnings_title') }}</b>
+  <ul style="margin:6px 0 0;padding-left:18px">{% for w in c.warnings %}<li>{{ t('compare.warn_' ~ w) }}</li>{% endfor %}</ul></div></div>
+{% endif %}
+
+<div class="grid grid-4">
+  {% set d = c.score_delta %}
+  <div class="card kpi accent"><div class="label">{{ t('score.label') }}</div>
+    <div class="value">{{ c.snap_a.health_score|round|int if c.snap_a.health_score is not none else '—' }} → {{ c.snap_b.health_score|round|int if c.snap_b.health_score is not none else '—' }}</div>
+    <div class="hint {{ 'delta-up' if d and d > 0 else ('delta-down' if d and d < 0) }}">{{ ('%+.1f'|format(d)) if d is not none else '—' }}</div></div>
+  <div class="card kpi"><div class="label">{{ t('compare.issues_new') }}</div><div class="value sev-text-high">{{ c.issues_new|length if c.issues_new|length < 500 else '500+' }}</div></div>
+  <div class="card kpi"><div class="label">{{ t('compare.issues_resolved') }}</div><div class="value st-2xx">{{ c.issues_resolved|length if c.issues_resolved|length < 500 else '500+' }}</div></div>
+  <div class="card kpi"><div class="label">{{ t('compare.issues_persisting') }}</div><div class="value">{{ c.issues_persisting|number(lang) }}</div></div>
+  <div class="card kpi"><div class="label">{{ t('compare.urls_new') }}</div><div class="value">{{ c.urls_new_total|number(lang) }}</div></div>
+  <div class="card kpi"><div class="label">{{ t('compare.urls_missing') }}</div><div class="value">{{ c.urls_missing_total|number(lang) }}</div><div class="hint">{{ t('compare.missing_note') }}</div></div>
+  <div class="card kpi"><div class="label">URL</div><div class="value">{{ (c.snap_a.pages_total or 0)|number(lang) }} → {{ (c.snap_b.pages_total or 0)|number(lang) }}</div></div>
+  <div class="card kpi"><div class="label">{{ t('indexability.indexable') }}</div><div class="value">{{ (c.snap_a.indexable or 0)|number(lang) }} → {{ (c.snap_b.indexable or 0)|number(lang) }}</div></div>
+</div>
+
+{% if c.settings_diff %}
+<div class="card mt">
+  <div class="card-head"><h2>{{ t('compare.settings_diff') }}</h2></div>
+  <div class="card-body flush"><table class="data"><thead><tr><th>{{ t('compare.setting') }}</th><th>#{{ c.a.id }}</th><th>#{{ c.b.id }}</th></tr></thead><tbody>
+  {% for name, va, vb in c.settings_diff %}<tr><td>{{ t('settings_form.' ~ name) }}</td><td class="small break">{{ va }}</td><td class="small break">{{ vb }}</td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
+{% endif %}
+
+<div class="card mt">
+  <div class="card-head"><h2>{{ t('compare.issue_deltas') }}</h2></div>
+  <div class="card-body flush table-wrap">
+    {% if c.issue_code_deltas %}
+    <table class="data"><thead><tr><th>{{ t('issues_ui.issue') }}</th><th class="num">#{{ c.a.id }}</th><th class="num">#{{ c.b.id }}</th><th class="num">Δ</th></tr></thead><tbody>
+    {% for r in c.issue_code_deltas %}<tr><td>{{ t('issues.' ~ r.code ~ '.name') }}</td><td class="num">{{ r.a }}</td><td class="num">{{ r.b }}</td>
+      <td class="num {{ 'delta-down' if r.delta > 0 else 'delta-up' }}">{{ '%+d'|format(r.delta) }}</td></tr>{% endfor %}
+    </tbody></table>
+    {% else %}<p class="card-body muted">{{ t('compare.no_issue_changes') }}</p>{% endif %}
+  </div>
+</div>
+
+<div class="grid grid-2 mt">
+  {% for title_key, items in [('issues_new', c.issues_new), ('issues_resolved', c.issues_resolved)] %}
+  <div class="card">
+    <div class="card-head"><h2>{{ t('compare.' ~ title_key) }}</h2><span class="small muted">{{ items|length }}</span></div>
+    <div class="card-body flush table-wrap" style="max-height:420px">
+      <table class="data"><tbody>
+      {% for i in items %}<tr><td>{{ m.severity_badge(t, i.severity) }}</td><td>{{ t('issues.' ~ i.code ~ '.name') }}<div class="small muted break">{{ i.url or t('issues_ui.site_wide') }}</div></td></tr>
+      {% else %}<tr><td class="muted">{{ t('detail.none') }}</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card mt">
+  <div class="card-head"><h2>{{ t('compare.field_changes') }}</h2></div>
+  <div class="card-body">
+    {% for name in ['status', 'title', 'description', 'canonical', 'indexability'] %}
+    <details class="issue-group" {{ 'open' if c.change_totals[name] and loop.first }}>
+      <summary><span class="badge">{{ c.change_totals[name] }}</span><b>{{ t('compare.change_' ~ name) }}</b><span></span><span></span></summary>
+      <div class="issue-body table-wrap" style="max-height:420px">
+        {% if c.changes[name] %}
+        <table class="data"><thead><tr><th>URL</th><th>#{{ c.a.id }}</th><th>#{{ c.b.id }}</th></tr></thead><tbody>
+        {% for ch in c.changes[name] %}<tr><td class="url small">{{ ch.url }}</td><td class="small diff-old break">{{ ch.old if ch.old is not none else '—' }}</td><td class="small diff-new break">{{ ch.new if ch.new is not none else '—' }}</td></tr>{% endfor %}
+        </tbody></table>
+        {% else %}<p class="muted">{{ t('compare.no_changes') }}</p>{% endif %}
+      </div>
+    </details>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="grid grid-2 mt">
+  {% for title_key, items, total in [('urls_new', c.urls_new, c.urls_new_total), ('urls_missing', c.urls_missing, c.urls_missing_total)] %}
+  <div class="card">
+    <div class="card-head"><h2>{{ t('compare.' ~ title_key) }}</h2><span class="small muted">{{ total }}</span></div>
+    <div class="card-body flush table-wrap" style="max-height:360px">
+      <table class="data"><tbody>{% for u in items %}<tr><td class="url small">{{ u }}</td></tr>{% else %}<tr><td class="muted">{{ t('detail.none') }}</td></tr>{% endfor %}</tbody></table>
+    </div>
+    {% if title_key == 'urls_missing' %}<div class="card-body"><p class="disclaimer">{{ icon('info', 14) }} {{ t('compare.missing_disclaimer') }}</p></div>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

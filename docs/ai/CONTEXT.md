@@ -18,9 +18,9 @@
 - Chromium: `.venv/Scripts/python -m playwright install chromium` (kurulu)
 
 ## Mevcut durum
-- **Aktif aşama:** Aşama 5 — Raporlama ve geçmiş
-- **Son tamamlanan:** Aşama 4 (tarama ekranları, URL tablosu/detay, sorunlar, CSV)
-- **Sıradaki adım:** analysis/scoring.py + docs/SCORING.md, reports/html_report.py, /crawls/{id}/reports, compare.py + /compare, reports/backup.py + ayarlar sayfası
+- **Aktif aşama:** Aşama 6 — Test ve son kontroller
+- **Son tamamlanan:** Aşama 5 (puan, HTML rapor, karşılaştırma, yedekleme)
+- **Sıradaki adım:** README (Türkçe, §20 başlıkları), temiz klonla run.py kurulum doğrulaması, kabul kriterleri tablosu, son kod kontrolü
 
 ## Kod haritası (özet)
 Bkz. `DECISIONS.md` ADR-001. Giriş noktaları:

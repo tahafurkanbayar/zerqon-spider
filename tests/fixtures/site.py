@@ -46,6 +46,7 @@ HOME = page(
       <a href="/deep/1">Derin</a>
       <a href="/js-page">JS sayfası</a>
       <a href="/about-copy">Kopya</a>
+      <a href="/xss">XSS</a>
       <a href="/nofollow-target" rel="nofollow">Nofollow</a>
       <a href="https://external.example/page">Dış bağlantı</a>
       <a href="mailto:info@example.com">E-posta</a>
@@ -86,6 +87,11 @@ JS_PAGE = page(
     "</script><script></script><script></script>",
 )
 JS_ONLY = page("JS hedef", "<h1>JS ile keşfedilen sayfa</h1>")
+XSS_PAGE = page(
+    "<script>alert('xss-title')</script>",
+    "<h1><img src=x onerror=alert(1)>Başlık</h1>",
+    head='<meta name="description" content="=HYPERLINK(&quot;http://evil.example&quot;)">',
+)
 
 SITEMAP_PAGES = """<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -166,6 +172,7 @@ def build_app() -> Starlette:
         Route("/nofollow-target", lambda r: html(page("NF", "<h1>NF</h1>"))),
         Route("/js-page", lambda r: html(JS_PAGE)),
         Route("/js-only-link", lambda r: html(JS_ONLY)),
+        Route("/xss", lambda r: html(XSS_PAGE)),
         Route("/deep/{n:int}", deep),
         Route("/throttled", throttled),
         Route("/img/{name}", image),

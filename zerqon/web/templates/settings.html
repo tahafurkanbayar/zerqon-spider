@@ -39,5 +39,27 @@
     </div>
   </div>
 </div>
-{% block backup_section %}{% endblock %}
+<div class="card mt">
+  <div class="card-head"><h2>{{ icon('backup') }} {{ t('backup_ui.title') }}</h2></div>
+  <div class="card-body grid grid-2">
+    <div class="stack">
+      <p class="muted">{{ t('backup_ui.text') }}</p>
+      <form method="post" action="/settings/backup"><button class="btn btn-primary" type="submit">{{ icon('backup') }} {{ t('backup_ui.create') }}</button></form>
+      <p class="small muted">{{ t('backup_ui.location') }}: <span class="mono break">{{ backups_dir }}</span></p>
+      {% if backups %}
+      <table class="data"><thead><tr><th>{{ t('reports_ui.file') }}</th><th class="num">{{ t('detail.size') }}</th><th></th></tr></thead><tbody>
+      {% for b in backups %}<tr><td class="small break">{{ b.name }}</td><td class="num small">{{ b.size|bytes }}</td>
+        <td><a class="btn btn-sm" href="/settings/backups/{{ b.name }}">{{ icon('download', 14) }}</a></td></tr>{% endfor %}
+      </tbody></table>
+      {% endif %}
+    </div>
+    <form method="post" action="/settings/restore" enctype="multipart/form-data" class="stack" data-confirm="{{ t('backup_ui.restore_confirm') }}">
+      <h3>{{ t('backup_ui.restore') }}</h3>
+      <p class="muted small">{{ t('backup_ui.restore_text') }}</p>
+      <input type="file" name="file" accept=".zip,application/zip" required>
+      <div><button class="btn btn-danger" type="submit">{{ icon('resume') }} {{ t('backup_ui.restore') }}</button></div>
+      <p class="small muted">{{ t('backup_ui.cli') }} <code>python run.py --backup</code> · <code>python run.py --restore yedek.zip</code></p>
+    </form>
+  </div>
+</div>
 {% endblock %}

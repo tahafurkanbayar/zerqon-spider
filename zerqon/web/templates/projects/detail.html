@@ -94,5 +94,15 @@
     {% endcall %}
   {% endif %}
 </div>
-{% block project_extra %}{% endblock %}
+<div class="card mt">
+  <div class="card-head"><h2>{{ t('reports_ui.saved_reports') }}</h2></div>
+  <div class="card-body flush table-wrap">
+    {% if reports %}
+    <table class="data"><thead><tr><th>{{ t('reports_ui.file') }}</th><th>{{ t('crawl.project') }}</th><th>{{ t('reports_ui.created') }}</th><th></th></tr></thead><tbody>
+    {% for r in reports %}<tr><td class="small break">{{ r.filename }}</td><td class="small"><a href="/crawls/{{ r.crawl_id }}">#{{ r.crawl_id }}</a></td><td class="small nowrap">{{ r.created_at|dt }}</td>
+      <td class="nowrap"><a class="btn btn-sm" href="/reports/{{ r.id }}" target="_blank" rel="noopener">{{ t('common.open') }}</a> <a class="btn btn-sm" href="/reports/{{ r.id }}?download=1">{{ icon('download', 14) }}</a></td></tr>{% endfor %}
+    </tbody></table>
+    {% else %}<p class="card-body muted">{{ t('reports_ui.no_reports') }}</p>{% endif %}
+  </div>
+</div>
 {% endblock %}

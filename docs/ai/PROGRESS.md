@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-09 — Aşama 5 tamamlandı: Raporlama ve geçmiş
+- `analysis/scoring.py` + `docs/SCORING.md`: deterministik çarpımsal puan, kategori alt puanları, güvenilirlik (yüksek/orta/düşük + nedenler). Snapshot'a yazılıyor.
+- `reports/html_report.py` + `reports/templates/report.html`: tek dosya, JS/CDN/font yok, satır içi SVG logo, autoescape; rapor görüntülemede ayrı sıkı CSP (`default-src 'none'`).
+- `reports/compare.py` + `/compare`: yeni/çözülen/devam eden sorunlar, yeni/artık keşfedilmeyen URL'ler, durum/title/description/canonical/indexability değişimleri, ayar farkı uyarıları.
+- `reports/backup.py`: SQLite online backup → zip + manifest; doğrulamalı geri yükleme (üye listesi, integrity_check, şema sürümü, pre-restore güvenlik kopyası). Ayarlar sayfasında UI + `python run.py --backup/--restore`.
+- `zerqon/formatting.py`: biçimlendirme yardımcıları web katmanından ayrıldı (rapor modülü web'e bağımlı değil).
+- Test sitesine XSS/formül enjeksiyonu sayfası eklendi; raporda ve CSV'de etkisizleştirildiği doğrulandı.
+- Testler: 148/148 geçti.
+
 ## 2026-10-09 — Aşama 4 tamamlandı: Yönetim paneli
 - `web/routes/crawls.py`: izin onaylı başlatma (onaysız istek reddedilir), canlı ilerleme (HTMX 1 sn polling, bitince HX-Refresh), durdur/devam/sil, URL tablosu (sunucu tarafı arama, 7 filtre, beyaz listeli sıralama, sayfalama, seçili satır CSV), URL detayı (HTTP, indexability üçlü ayrımı, meta, başlık ağacı, gelen/giden bağlantı, görseller, yapılandırılmış veri, sorunlar, ham/render karşılaştırması), sorunlar ekranı (önem/kategori filtresi, açılır gruplar, etkilenen URL'ler + kanıt + çözüm).
 - `pages_repo.py`, `issues_repo.py`; `reports/csv_export.py` (10 tür + seçili satırlar, BOM, formula injection koruması, güvenli dosya adı).

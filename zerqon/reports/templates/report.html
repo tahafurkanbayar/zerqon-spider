@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="{{ PRODUCT_NAME }} {{ VERSION }}">
+<title>{{ t('report.title') }} — {{ project.name }} · {{ PRODUCT_NAME }}</title>
+<style>
+  :root { --navy:#0b1426; --navy2:#13213f; --blue:#2f7bff; --cyan:#22d3ee; --text:#0f172a; --muted:#5b6678; --border:#e1e6ef; --bg:#f4f6fa;
+          --critical:#e11d48; --high:#ea580c; --medium:#b7791f; --low:#2f7bff; --info:#64748b; --ok:#16a34a; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; color: var(--text); background: var(--bg); font-size: 14px; line-height: 1.5; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  header.hero { background: linear-gradient(135deg, #0b1426, #060b17); color: #dce6f7; border-radius: 16px; padding: 28px 32px; display: flex; gap: 20px; align-items: center; }
+  header.hero h1 { margin: 0; color: #fff; font-size: 26px; }
+  header.hero .brand { font-weight: 700; color: #fff; } header.hero .brand span { color: var(--cyan); }
+  header.hero .slogan { color: var(--cyan); font-weight: 600; font-size: 13px; }
+  header.hero .meta { color: #a9b8d3; font-size: 13px; }
+  section { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-top: 18px; }
+  h2 { font-size: 18px; margin: 0 0 12px; } h3 { font-size: 15px; margin: 14px 0 6px; }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .kpi { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .kpi .l { color: var(--muted); font-size: 12px; } .kpi .v { font-size: 24px; font-weight: 700; }
+  .score { display: flex; gap: 24px; align-items: center; }
+  .score .num { font-size: 56px; font-weight: 800; line-height: 1; }
+  .muted { color: var(--muted); } .small { font-size: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; background: #f8fafc; }
+  td.num, th.num { text-align: right; } .break { word-break: break-all; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+  .sev-critical { background: #fde7ec; color: var(--critical); } .sev-high { background: #fdeee4; color: var(--high); }
+  .sev-medium { background: #fbf3dc; color: var(--medium); } .sev-low { background: #e6efff; color: var(--low); } .sev-info { background: #eef1f5; color: var(--info); }
+  .bar { height: 10px; background: #eef1f6; border-radius: 999px; overflow: hidden; } .bar > i { display: block; height: 100%; }
+  .issue { border: 1px solid var(--border); border-radius: 10px; margin-top: 12px; }
+  .issue > summary { cursor: pointer; padding: 12px 14px; display: flex; gap: 10px; align-items: center; list-style: none; }
+  .issue > summary::-webkit-details-marker { display: none; }
+  .issue .body { padding: 0 14px 14px; }
+  .evidence { font-family: Consolas, Menlo, monospace; font-size: 11.5px; background: #f6f8fb; border: 1px solid var(--border); border-radius: 6px; padding: 5px 7px; white-space: pre-wrap; word-break: break-word; }
+  .note { background: #f0f6ff; border: 1px solid #cfe0ff; border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+  ul.lim li { margin-bottom: 6px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin: 28px 0 12px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } header.hero { flex-direction: column; align-items: flex-start; } }
+  @media print { body { background: #fff; } section, .issue { break-inside: avoid; } details.issue { display: block; } details.issue > .body { display: block; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    {{ logo }}
+    <div>
+      <div class="brand">Zerqon <span>Spider</span> <span class="small" style="color:#6f85a8">· {{ PRODUCT_DESCRIPTION }}</span></div>
+      <div class="slogan">{{ SLOGAN }}</div>
+      <h1>{{ t('report.title') }}: {{ project.name }}</h1>
+      <div class="meta">{{ job.start_url }} · {{ t('crawl.crawl_n', n=job.id) }} · {{ t('report.crawl_date') }}: {{ job.started_at|dt }} · {{ t('report.generated') }}: {{ generated_at|dt }}</div>
+    </div>
+  </header>
+
+  <section>
+    <h2>{{ t('report.summary') }}</h2>
+    <div class="score">
+      {% set sc = snap.health_score %}
+      <div>
+        <div class="num" style="color:{{ '#16a34a' if sc is not none and sc >= 80 else ('#b7791f' if sc is not none and sc >= 60 else ('#ea580c' if sc is not none and sc >= 40 else '#e11d48')) }}">{{ sc|round|int if sc is not none else '—' }}<span class="small muted">/100</span></div>
+        <div class="small"><b>{{ t('score.label') }}</b> · {{ t('score.confidence_' ~ (snap.score_confidence or 'low')) }}</div>
+      </div>
+      <div class="note">{{ t('score.not_google_long') }}
+        {% if reasons %}<div class="small" style="margin-top:6px"><b>{{ t('report.confidence_reasons') }}:</b> {% for r in reasons %}{{ t('confidence_reasons.' ~ r) }}{{ '; ' if not loop.last }}{% endfor %}</div>{% endif %}
+      </div>
+    </div>
+    <div class="grid" style="margin-top:16px">
+      <div class="kpi"><div class="l">{{ t('crawl.urls_total') }}</div><div class="v">{{ (snap.pages_total or 0)|number(lang) }}</div></div>
+      <div class="kpi"><div class="l">{{ t('indexability.indexable') }}</div><div class="v" style="color:var(--ok)">{{ (snap.indexable or 0)|number(lang) }}</div></div>
+      <div class="kpi"><div class="l">{{ t('indexability.non_indexable') }}</div><div class="v" style="color:var(--high)">{{ (snap.non_indexable or 0)|number(lang) }}</div></div>
+      <div class="kpi"><div class="l">{{ t('dashboard.avg_response') }}</div><div class="v">{{ (snap.avg_response_ms|round|int ~ ' ms') if snap.avg_response_ms else '—' }}</div></div>
+      <div class="kpi"><div class="l">2xx</div><div class="v">{{ (snap.status_2xx or 0)|number(lang) }}</div></div>
+      <div class="kpi"><div class="l">3xx</div><div class="v">{{ (snap.status_3xx or 0)|number(lang) }}</div></div>
+      <div class="kpi"><div class="l">4xx</div><div class="v" style="color:var(--high)">{{ (snap.status_4xx or 0)|number(lang) }}</div></div>
+      <div class="kpi"><div class="l">5xx</div><div class="v" style="color:var(--critical)">{{ (snap.status_5xx or 0)|number(lang) }}</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>{{ t('report.severity_distribution') }}</h2>
+    {% set maxsev = [severity_counts.values()|max, 1]|max %}
+    <table>
+      {% for sev in SEVERITY_ORDER %}
+      <tr><td style="width:120px"><span class="badge sev-{{ sev }}">{{ t('severity.' ~ sev) }}</span></td>
+        <td><div class="bar"><i style="width:{{ (severity_counts[sev] / maxsev * 100)|round(1) }}%;background:var(--{{ sev }})"></i></div></td>
+        <td class="num" style="width:80px"><b>{{ severity_counts[sev]|number(lang) }}</b></td></tr>
+      {% endfor %}
+    </table>
+    {% if category_scores %}
+    <h3>{{ t('report.category_scores') }}</h3>
+    <table><tr><th>{{ t('issues_ui.category') }}</th><th class="num">{{ t('score.short') }}</th></tr>
+      {% for cat, value in category_scores|dictsort(by='value') %}<tr><td>{{ t('categories.' ~ cat) }}</td><td class="num">{{ value }}</td></tr>{% endfor %}
+    </table>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>{{ t('report.top_issues') }}</h2>
+    <p class="muted small">{{ t('report.top_issues_hint') }}</p>
+    {% for g in detailed %}
+    <details class="issue" {{ 'open' if loop.index <= 5 }}>
+      <summary><span class="badge sev-{{ g.severity }}">{{ t('severity.' ~ g.severity) }}</span>
+        <b>{{ t('issues.' ~ g.code ~ '.name') }}</b>
+        <span class="muted small">· {{ t('categories.' ~ g.category) }} · {{ t('issues_ui.urls_n', n=g.urls|number(lang)) }}</span></summary>
+      <div class="body">
+        <p><b>{{ t('issues_ui.what') }}</b> {{ t('issues.' ~ g.code ~ '.desc') }}</p>
+        <p><b>{{ t('issues_ui.fix') }}:</b> {{ t('issues.' ~ g.code ~ '.fix') }}</p>
+        <table>
+          <tr><th>{{ t('issues_ui.affected_url') }}</th><th>{{ t('issues_ui.evidence') }}</th></tr>
+          {% for s in g.samples %}
+          <tr><td class="break small">{{ s.url or t('issues_ui.site_wide') }}{% if s.status_code %} <span class="muted">({{ s.status_code }})</span>{% endif %}</td>
+              <td>{% if s.evidence %}<div class="evidence">{{ s.evidence }}</div>{% else %}<span class="muted">—</span>{% endif %}</td></tr>
+          {% endfor %}
+        </table>
+        {% if g.urls > g.samples|length %}<p class="small muted">{{ t('report.more_urls', n=(g.urls - g.samples|length)|number(lang)) }}</p>{% endif %}
+      </div>
+    </details>
+    {% else %}
+    <p>{{ t('issues_ui.none_found') }}</p>
+    {% endfor %}
+    {% set infos = groups|selectattr('severity', 'equalto', 'info')|list %}
+    {% if infos %}
+    <h3>{{ t('report.info_items') }}</h3>
+    <table><tr><th>{{ t('issues_ui.issue') }}</th><th class="num">URL</th></tr>
+      {% for g in infos %}<tr><td>{{ t('issues.' ~ g.code ~ '.name') }}</td><td class="num">{{ g.urls|number(lang) }}</td></tr>{% endfor %}
+    </table>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>{{ t('report.indexability') }}</h2>
+    <table><tr><th>{{ t('report.reason') }}</th><th class="num">URL</th></tr>
+      {% for r in index_reasons %}<tr><td>{{ t('index_reasons.' ~ r.reason) }}</td><td class="num">{{ r.n|number(lang) }}</td></tr>{% else %}<tr><td colspan="2" class="muted">{{ t('report.all_indexable') }}</td></tr>{% endfor %}
+    </table>
+    <p class="small muted">{{ t('indexability.disclaimer') }}</p>
+  </section>
+
+  <section>
+    <h2>{{ t('report.settings_scope') }}</h2>
+    <table>
+      <tr><th style="width:40%">{{ t('projects.start_url') }}</th><td class="break">{{ job.start_url }}</td></tr>
+      <tr><th>{{ t('crawl.status') }}</th><td>{{ t('crawl_status.' ~ job.status) }}{% if job.limit_reached %} · {{ t('crawl.limit_reached') }}{% endif %}</td></tr>
+      <tr><th>{{ t('settings_form.render_mode') }}</th><td>{{ t('render_mode.' ~ settings.render_mode) }}</td></tr>
+      <tr><th>{{ t('settings_form.max_urls') }} / {{ t('settings_form.max_depth') }}</th><td>{{ settings.max_urls|number(lang) }} / {{ settings.max_depth }}</td></tr>
+      <tr><th>{{ t('settings_form.concurrency') }} / {{ t('settings_form.delay_ms') }}</th><td>{{ settings.concurrency }} / {{ settings.delay_ms }} ms</td></tr>
+      <tr><th>{{ t('settings_form.include_subdomains') }}</th><td>{{ t('common.yes') if settings.include_subdomains else t('common.no') }}</td></tr>
+      <tr><th>{{ t('settings_form.include_patterns') }}</th><td class="break small">{{ settings.include_patterns or '—' }}</td></tr>
+      <tr><th>{{ t('settings_form.exclude_patterns') }}</th><td class="break small">{{ settings.exclude_patterns or '—' }}</td></tr>
+      <tr><th>{{ t('settings_form.user_agent') }}</th><td class="break small">{{ settings.user_agent }}</td></tr>
+      <tr><th>robots.txt</th><td>{{ t('robots_status.' ~ (job.robots_status or 'unknown')) }}</td></tr>
+      <tr><th>{{ t('report.thresholds') }}</th><td class="small">Title {{ settings.title_min_chars }}–{{ settings.title_max_chars }} · Description {{ settings.description_min_chars }}–{{ settings.description_max_chars }} · {{ t('settings_form.min_word_count') }}: {{ settings.min_word_count }}</td></tr>
+    </table>
+    {% if sitemaps %}
+    <h3>Sitemap</h3>
+    <table><tr><th>URL</th><th>{{ t('report.kind') }}</th><th class="num">HTTP</th><th class="num">URL</th></tr>
+      {% for s in sitemaps %}<tr><td class="break small">{{ s.url }}</td><td>{{ s.kind or s.error_code or '—' }}</td><td class="num">{{ s.status_code or '—' }}</td><td class="num">{{ s.url_count }}</td></tr>{% endfor %}
+    </table>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>{{ t('report.limitations') }}</h2>
+    <ul class="lim">
+      {% if job.status != 'completed' %}<li>{{ t('report.lim_partial') }}</li>{% endif %}
+      {% if job.limit_reached %}<li>{{ t('report.lim_url_limit') }}</li>{% endif %}
+      {% if settings.render_mode == 'standard' %}<li>{{ t('report.lim_no_render') }}</li>{% endif %}
+      <li>{{ t('report.lim_scope') }}</li>
+      <li>{{ t('report.lim_index') }}</li>
+      <li>{{ t('report.lim_cwv') }}</li>
+      <li>{{ t('report.lim_structured') }}</li>
+      <li>{{ t('report.lim_thresholds') }}</li>
+      <li>{{ t('report.lim_orphans') }}</li>
+    </ul>
+  </section>
+
+  <footer>{{ PRODUCT_NAME }} v{{ VERSION }} — {{ SLOGAN }} · {{ t('report.footer') }}</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+{% extends "crawls/base_crawl.html" %}
+{% block title %}{{ t('crawl.tab_reports') }} · {{ project.name }}{% endblock %}
+{% block crawl_content %}
+<div class="grid grid-2">
+  <div class="card">
+    <div class="card-head"><h2>{{ icon('report') }} {{ t('reports_ui.html_title') }}</h2></div>
+    <div class="card-body stack">
+      <p class="muted">{{ t('reports_ui.html_text') }}</p>
+      {% if is_active %}
+        <div class="alert alert-info" style="margin:0">{{ icon('info') }}<div>{{ t('reports_ui.wait_for_crawl') }}</div></div>
+      {% else %}
+      <form method="post" action="/crawls/{{ job.id }}/reports/html" class="row">
+        <label class="sr-only" for="rep-lang">{{ t('prefs.language') }}</label>
+        <select id="rep-lang" name="language" style="width:auto">
+          <option value="tr" {{ 'selected' if lang == 'tr' }}>Türkçe</option>
+          <option value="en" {{ 'selected' if lang == 'en' }}>English</option>
+        </select>
+        <button class="btn btn-primary" type="submit">{{ icon('report') }} {{ t('reports_ui.generate') }}</button>
+      </form>
+      {% endif %}
+      {% if reports %}
+      <table class="data">
+        <thead><tr><th>{{ t('reports_ui.file') }}</th><th>{{ t('reports_ui.created') }}</th><th class="num">{{ t('detail.size') }}</th><th></th></tr></thead>
+        <tbody>
+        {% for r in reports %}
+          <tr>
+            <td class="small break">{{ r.filename }}</td>
+            <td class="small nowrap">{{ r.created_at|dt }}</td>
+            <td class="num small">{{ r.size_bytes|bytes }}</td>
+            <td class="nowrap">
+              <a class="btn btn-sm" href="/reports/{{ r.id }}" target="_blank" rel="noopener">{{ t('common.open') }}</a>
+              <a class="btn btn-sm" href="/reports/{{ r.id }}?download=1">{{ icon('download', 14) }}</a>
+              <form method="post" action="/reports/{{ r.id }}/delete" style="display:inline" data-confirm="{{ t('reports_ui.delete_confirm') }}">
+                <button class="btn btn-sm btn-danger" type="submit" aria-label="{{ t('crawl.delete') }}">{{ icon('trash', 14) }}</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>{{ icon('download') }} {{ t('reports_ui.csv_title') }}</h2></div>
+    <div class="card-body">
+      <p class="muted">{{ t('reports_ui.csv_text') }}</p>
+      <ul class="list-plain">
+        {% for key in export_keys %}
+        <li class="row" style="justify-content:space-between">
+          <span><b>{{ t('exports.' ~ key) }}</b><br><span class="small muted">{{ t('exports.' ~ key ~ '_hint') }}</span></span>
+          <a class="btn btn-sm" href="/crawls/{{ job.id }}/export/{{ key }}.csv">{{ icon('download', 14) }} CSV</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -125,3 +125,44 @@ def test_second_crawl_keeps_history(client: TestClient, site: str) -> None:
     detail = client.get(f"/projects/{pid}").text
     assert f"#{first}" in detail and f"#{second}" in detail
     assert client.get(f"/crawls/{first}/pages").status_code == 200
+
+
+def test_reports_compare_and_backup_routes(client: TestClient, site: str) -> None:
+    pid = create_project(client, site, max_urls="15")
+    first = run_crawl_via_ui(client, pid)
+    second = run_crawl_via_ui(client, pid)
+
+    # HTML raporu üret, görüntüle, indir
+    assert client.get(f"/crawls/{second}/reports").status_code == 200
+    res = client.post(f"/crawls/{second}/reports/html", data={"language": "en"}, follow_redirects=False)
+    assert res.status_code == 303 and "report_created" in res.headers["location"]
+    page = client.get(f"/crawls/{second}/reports").text
+    report_id = re.search(r'href="/reports/(\d+)"', page).group(1)  # type: ignore[union-attr]
+    view = client.get(f"/reports/{report_id}")
+    assert view.status_code == 200 and "Technical SEO Audit Report" in view.text
+    assert "default-src 'none'" in view.headers["content-security-policy"]
+    download = client.get(f"/reports/{report_id}?download=1")
+    assert "attachment" in download.headers["content-disposition"]
+    assert f"/reports/{report_id}" in client.get(f"/projects/{pid}").text
+
+    # Karşılaştırma
+    cmp_page = client.get(f"/compare?crawl={first}&crawl={second}")
+    assert cmp_page.status_code == 200 and "Tarama karşılaştırması" in cmp_page.text
+    assert client.get(f"/compare?a={first}").status_code == 400
+
+    # Yedekleme, indirme, yol enjeksiyonu engeli, geri yükleme
+    res = client.post("/settings/backup", follow_redirects=False)
+    assert res.status_code == 303
+    settings_page = client.get("/settings").text
+    name = re.search(r'/settings/backups/(zerqon-backup-[^"]+\.zip)', settings_page).group(1)  # type: ignore[union-attr]
+    archive = client.get(f"/settings/backups/{name}")
+    assert archive.status_code == 200 and archive.content[:2] == b"PK"
+    assert client.get("/settings/backups/..%2F..%2Fzerqon.db").status_code == 404
+    assert client.get("/settings/backups/zerqon.db").status_code == 404
+    restored = client.post(
+        "/settings/restore", files={"file": ("backup.zip", archive.content, "application/zip")}, follow_redirects=False
+    )
+    assert "restore_done" in restored.headers["location"]
+    bad = client.post("/settings/restore", files={"file": ("x.zip", b"nope", "application/zip")}, follow_redirects=False)
+    assert "restore_failed" in bad.headers["location"]
+    assert client.get(f"/crawls/{second}").status_code == 200

@@ -6,9 +6,10 @@ from fastapi import FastAPI
 
 
 def register_routes(app: FastAPI) -> None:
-    from zerqon.web.routes import crawls, dashboard, preferences, projects
+    from zerqon.web.routes import crawls, dashboard, preferences, projects, reports
 
     app.include_router(dashboard.router)
     app.include_router(projects.router)
     app.include_router(preferences.router)
     app.include_router(crawls.router)
+    app.include_router(reports.router)

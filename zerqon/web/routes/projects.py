@@ -75,6 +75,8 @@ def project_detail(project_id: int, request: Request, conn: sqlite3.Connection =
             "jobs": jobs,
             "active_job": next((j for j in jobs if j["status"] in crawls_repo.ACTIVE_STATUSES), None),
             "msg": request.query_params.get("msg", ""),
+            "reports": [dict(r) for r in conn.execute(
+                "SELECT * FROM reports WHERE project_id = ? ORDER BY id DESC LIMIT 50", (project_id,))],
         },
     )
 

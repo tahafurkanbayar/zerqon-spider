@@ -10,6 +10,7 @@ from fastapi.responses import HTMLResponse, Response
 from zerqon.config import Settings
 from zerqon.db.repositories import settings_repo
 from zerqon.i18n import SUPPORTED_LANGUAGES
+from zerqon.reports.backup import list_backups
 from zerqon.web.app import LANG_COOKIE, THEME_COOKIE
 from zerqon.web.deps import get_app_settings, get_conn, redirect
 from zerqon.web.templating import render
@@ -32,6 +33,8 @@ def settings_page(request: Request, app_settings: Settings = Depends(get_app_set
             "allow_localhost": app_settings.allow_localhost,
             "bind": f"{app_settings.host}:{app_settings.port}",
             "msg": request.query_params.get("msg", ""),
+            "backups": list_backups(app_settings.backups_dir)[:20],
+            "backups_dir": str(app_settings.backups_dir),
         },
     )
 
