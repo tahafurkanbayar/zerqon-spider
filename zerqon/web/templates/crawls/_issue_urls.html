@@ -1,0 +1,26 @@
+{% import "macros.html" as m %}
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>{{ t('issues_ui.affected_url') }}</th><th>{{ t('issues_ui.severity') }}</th><th>{{ t('issues_ui.evidence') }}</th><th>{{ t('issues_ui.detected') }}</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td class="url small">{% if r.page_id %}<a href="/crawls/{{ crawl_id }}/pages/{{ r.page_id }}">{{ r.url }}</a>{% else %}{{ r.url or t('issues_ui.site_wide') }}{% endif %}
+          {% if r.status_code %}<div>{{ m.status_badge(r.status_code) }} <span class="muted">{{ t('columns.inlinks') }}: {{ r.inlinks }}</span></div>{% endif %}</td>
+        <td>{{ m.severity_badge(t, r.severity) }}</td>
+        <td>{% if r.evidence %}<div class="evidence">{{ r.evidence }}</div>{% else %}<span class="muted">—</span>{% endif %}</td>
+        <td class="small nowrap">{{ r.detected_at|dt }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if pages > 1 %}
+<div class="pager">
+  <span class="small muted">{{ t('table.showing', page=page, pages=pages, total=total) }}</span>
+  <div class="row">
+    {% if page > 1 %}<button class="btn btn-sm" type="button" hx-get="/crawls/{{ crawl_id }}/issues/{{ code }}?page={{ page - 1 }}" hx-target="#urls-{{ code }}">← {{ t('table.prev') }}</button>{% endif %}
+    {% if page < pages %}<button class="btn btn-sm" type="button" hx-get="/crawls/{{ crawl_id }}/issues/{{ code }}?page={{ page + 1 }}" hx-target="#urls-{{ code }}">{{ t('table.next') }} →</button>{% endif %}
+  </div>
+</div>
+{% endif %}

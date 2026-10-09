@@ -1,0 +1,188 @@
+{% extends "crawls/base_crawl.html" %}
+{% block title %}{{ page.url|middle(60) }}{% endblock %}
+{% block crawl_content %}
+{% set lang = t.language %}
+<div class="page-head">
+  <div style="min-width:0">
+    <p class="small muted"><a href="/crawls/{{ job.id }}/pages">← {{ t('crawl.tab_pages') }}</a></p>
+    <h1 class="break" style="font-size:1.2rem">{{ page.url }}</h1>
+    <div class="row">
+      {{ m.status_badge(page.status_code, page.fetch_status, t) }}
+      {{ m.indexability(t, page.indexability) }}
+      {% if page.rendered %}<span class="badge">JS · {{ t('render_reasons.' ~ (page.render_reason or 'javascript_mode')) }}</span>{% endif %}
+      {% if page.in_sitemap %}<span class="badge">sitemap</span>{% endif %}
+      <a class="small" href="{{ page.url }}" target="_blank" rel="noopener noreferrer nofollow">{{ t('detail.open_url') }} {{ icon('external', 12) }}</a>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  {% for key in ['overview', 'meta', 'headings', 'links', 'images', 'structured', 'issues', 'render'] %}
+  <a href="#{{ key }}">{{ t('detail.section_' ~ key) }}{% if key == 'issues' and issues %} ({{ issues|length }}){% endif %}</a>
+  {% endfor %}
+</div>
+
+<div class="grid grid-2" id="overview">
+  <div class="card">
+    <div class="card-head"><h2>{{ t('detail.http') }}</h2></div>
+    <div class="card-body">
+      <table class="kv">
+        <tr><th>{{ t('columns.status') }}</th><td>{{ page.status_code or '—' }} · {{ t('fetch_status.' ~ page.fetch_status) }}{% if page.error_code %} · {{ t('fetch_errors.' ~ page.error_code, page.error_code) }}{% endif %}</td></tr>
+        {% if page.error_code %}<tr><th>{{ t('detail.what_to_do') }}</th><td class="small">{{ t('fetch_errors.' ~ page.error_code ~ '_fix', t('fetch_errors.generic_fix')) }}</td></tr>{% endif %}
+        <tr><th>{{ t('columns.type') }}</th><td class="small">{{ page.content_type or '—' }}</td></tr>
+        <tr><th>{{ t('detail.size') }}</th><td>{{ page.content_length|bytes }}{% if page.body_truncated %} · {{ t('detail.truncated') }}{% endif %}</td></tr>
+        <tr><th>{{ t('columns.response') }}</th><td>{{ page.response_time_ms if page.response_time_ms is not none else '—' }} ms</td></tr>
+        <tr><th>{{ t('detail.discovery') }}</th><td>{{ t('sources.' ~ page.source, page.source) }} · {{ t('columns.depth') }}: {{ page.crawl_depth if page.crawl_depth is not none else '—' }}</td></tr>
+        <tr><th>{{ t('columns.inlinks') }} / {{ t('columns.outlinks') }}</th><td>{{ page.inlinks }} / {{ page.outlinks_internal }} {{ t('detail.internal') }} · {{ page.outlinks_external }} {{ t('detail.external') }}</td></tr>
+        <tr><th>{{ t('columns.words') }}</th><td>{{ page.word_count|number(lang) }}</td></tr>
+        {% if page.x_robots_tag %}<tr><th>X-Robots-Tag</th><td class="mono small">{{ page.x_robots_tag }}</td></tr>{% endif %}
+      </table>
+      {% if redirects %}
+      <h3 class="mt">{{ t('detail.redirect_chain') }}</h3>
+      <ol class="small">{% for r in redirects %}<li><span class="badge st-3xx">{{ r.status_code or r.redirect_type }}</span> <span class="break">{{ r.from_url }} → {{ r.to_url }}</span></li>{% endfor %}</ol>
+      {% elif page.redirect_url %}
+      <p class="small mt">→ <span class="break">{{ page.redirect_url }}</span> ({{ page.redirect_type }})</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>{{ t('detail.indexability') }}</h2></div>
+    <div class="card-body">
+      <table class="kv">
+        <tr><th>{{ t('detail.crawlable') }}</th><td>{{ t('common.yes') if page.crawlable else t('detail.blocked_by_robots') }}</td></tr>
+        <tr><th>{{ t('detail.technical_indexability') }}</th><td>{{ m.indexability(t, page.indexability) }}{% if page.indexability_reason %} — {{ t('index_reasons.' ~ page.indexability_reason) }}{% endif %}</td></tr>
+        <tr><th>{{ t('detail.google_index') }}</th><td class="small muted">{{ t('detail.google_index_unknown') }}</td></tr>
+        <tr><th>Meta robots</th><td class="mono small">{{ page.meta_robots or '—' }}</td></tr>
+        <tr><th>Canonical</th><td class="small break">{{ page.canonical or '—' }}{% if (page.canonical_count or 0) > 1 %} <span class="badge sev-high">×{{ page.canonical_count }}</span>{% endif %}
+          {% if page.canonical and page.canonical_key == page.url_key %}<div class="small muted">{{ t('detail.self_canonical') }}</div>{% endif %}</td></tr>
+        <tr><th>Sitemap</th><td>{{ t('common.yes') if page.in_sitemap else t('common.no') }}</td></tr>
+      </table>
+      <p class="disclaimer mt">{{ icon('info', 14) }} {{ t('indexability.disclaimer') }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="card mt" id="meta">
+  <div class="card-head"><h2>{{ t('detail.section_meta') }}</h2></div>
+  <div class="card-body">
+    <table class="kv">
+      <tr><th>Title</th><td>{{ page.title or '—' }}{% if page.title_length is not none %} <span class="small muted">({{ page.title_length }} {{ t('detail.chars') }}{% if (page.title_count or 0) > 1 %}, ×{{ page.title_count }}{% endif %})</span>{% endif %}</td></tr>
+      <tr><th>Meta description</th><td>{{ page.meta_description or '—' }}{% if page.description_length is not none %} <span class="small muted">({{ page.description_length }} {{ t('detail.chars') }})</span>{% endif %}</td></tr>
+      <tr><th>H1</th><td>{{ page.h1 or '—' }}{% if (page.h1_count or 0) > 1 %} <span class="small muted">(×{{ page.h1_count }})</span>{% endif %}</td></tr>
+      <tr><th>lang / charset</th><td>{{ page.lang or '—' }} / {{ page.charset or '—' }}</td></tr>
+      <tr><th>Viewport</th><td class="small">{{ page.viewport or '—' }}</td></tr>
+      <tr><th>Open Graph</th><td class="small">title: {{ page.og_title or '—' }}<br>description: {{ page.og_description or '—' }}<br>image: <span class="break">{{ page.og_image or '—' }}</span><br>url: <span class="break">{{ page.og_url or '—' }}</span></td></tr>
+      <tr><th>Twitter/X</th><td class="small">card: {{ page.twitter_card or '—' }} · title: {{ page.twitter_title or '—' }}</td></tr>
+      {% if hreflang %}
+      <tr><th>hreflang</th><td class="small">{% for h in hreflang %}<div><b>{{ h.lang }}</b> → <span class="break">{{ h.href }}</span> {% if h.target_id %}{{ m.status_badge(h.target_status) }}{% endif %}</div>{% endfor %}</td></tr>
+      {% endif %}
+    </table>
+  </div>
+</div>
+
+<div class="grid grid-2 mt">
+  <div class="card" id="headings">
+    <div class="card-head"><h2>{{ t('detail.section_headings') }}</h2><span class="small muted">{{ headings|length }}</span></div>
+    <div class="card-body">
+      {% if headings %}
+      <ul class="list-plain heading-tree">{% for h in headings %}<li style="padding-left:{{ (h.level - 1) * 16 }}px"><span class="lvl">H{{ h.level }}</span>{{ h.text or '(' ~ t('detail.empty') ~ ')' }}</li>{% endfor %}</ul>
+      {% else %}<p class="muted">{{ t('detail.none') }}</p>{% endif %}
+    </div>
+  </div>
+  <div class="card" id="structured">
+    <div class="card-head"><h2>{{ t('detail.section_structured') }}</h2></div>
+    <div class="card-body">
+      {% if structured %}
+      <table class="data"><thead><tr><th>{{ t('detail.format') }}</th><th>{{ t('detail.schema_type') }}</th><th>{{ t('detail.status') }}</th></tr></thead><tbody>
+      {% for s in structured %}<tr><td>{{ s.format }}</td><td>{{ s.schema_type or '—' }}</td>
+        <td class="small">{% if s.error %}<span class="sev-text-high">{{ s.error }}</span>{% elif s.missing_fields %}<span class="sev-text-medium">{{ t('detail.missing_fields') }}: {{ s.missing_fields }}</span>{% else %}<span class="st-2xx">{{ t('detail.basic_ok') }}</span>{% endif %}</td></tr>{% endfor %}
+      </tbody></table>
+      <p class="disclaimer mt">{{ icon('info', 14) }} {{ t('detail.structured_disclaimer') }}</p>
+      {% else %}<p class="muted">{{ t('detail.no_structured') }}</p>{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card mt" id="issues">
+  <div class="card-head"><h2>{{ t('detail.section_issues') }}</h2></div>
+  <div class="card-body flush">
+    {% if issues %}
+    <table class="data"><thead><tr><th>{{ t('issues_ui.severity') }}</th><th>{{ t('issues_ui.issue') }}</th><th>{{ t('issues_ui.evidence') }}</th><th>{{ t('issues_ui.fix') }}</th></tr></thead><tbody>
+    {% for i in issues %}
+      <tr>
+        <td>{{ m.severity_badge(t, i.severity) }}{% if i.severity != i.base_severity %}<div class="small muted">{{ t('issues_ui.base') }}: {{ t('severity.' ~ i.base_severity) }}</div>{% endif %}</td>
+        <td><b>{{ t('issues.' ~ i.code ~ '.name') }}</b><div class="small muted">{{ t('issues.' ~ i.code ~ '.desc') }}</div></td>
+        <td>{% if i.evidence %}<div class="evidence">{{ i.evidence }}</div>{% endif %}</td>
+        <td class="small">{{ t('issues.' ~ i.code ~ '.fix') }}</td>
+      </tr>
+    {% endfor %}
+    </tbody></table>
+    {% else %}{{ m.empty(t('detail.no_issues'), '', 'check') }}{% endif %}
+  </div>
+</div>
+
+<div class="card mt" id="links">
+  <div class="card-head"><h2>{{ t('detail.section_links') }}</h2><span class="small muted">{{ t('detail.outlinks_n', n=outlinks|length) }} · {{ t('detail.inlinks_n', n=inlinks|length) }}</span></div>
+  <div class="grid grid-2 card-body">
+    <div class="table-wrap" style="max-height:420px">
+      <h3>{{ t('detail.outgoing') }}</h3>
+      <table class="data"><tbody>
+      {% for l in outlinks %}
+        <tr><td class="url small">{% if l.target_id %}<a href="/crawls/{{ job.id }}/pages/{{ l.target_id }}">{{ l.target_url }}</a>{% else %}{{ l.target_url }}{% endif %}
+          <div class="muted">{{ l.anchor_text or '(' ~ t('detail.empty_anchor') ~ ')' }}</div></td>
+          <td class="nowrap">{% if l.target_status %}{{ m.status_badge(l.target_status) }}{% endif %}
+            {% if not l.is_internal %}<span class="badge">{{ t('detail.external') }}</span>{% endif %}
+            {% if l.nofollow %}<span class="badge sev-medium">nofollow</span>{% endif %}
+            {% if l.render_only %}<span class="badge">JS</span>{% endif %}</td></tr>
+      {% else %}<tr><td class="muted">{{ t('detail.none') }}</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+    <div class="table-wrap" style="max-height:420px">
+      <h3>{{ t('detail.incoming') }}</h3>
+      <table class="data"><tbody>
+      {% for l in inlinks %}
+        <tr><td class="url small"><a href="/crawls/{{ job.id }}/pages/{{ l.source_id }}">{{ l.source_url }}</a><div class="muted">{{ l.anchor_text or '(' ~ t('detail.empty_anchor') ~ ')' }}</div></td>
+          <td>{% if l.nofollow %}<span class="badge sev-medium">nofollow</span>{% endif %}</td></tr>
+      {% else %}<tr><td class="muted">{{ t('detail.no_inlinks') }}</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<div class="card mt" id="images">
+  <div class="card-head"><h2>{{ t('detail.section_images') }}</h2><span class="small muted">{{ images|length }}</span></div>
+  <div class="card-body flush table-wrap">
+    {% if images %}
+    <table class="data"><thead><tr><th>URL</th><th>Alt</th><th>{{ t('detail.dimensions') }}</th><th>loading</th><th>{{ t('columns.status') }}</th><th class="num">{{ t('detail.size') }}</th></tr></thead><tbody>
+    {% for i in images %}
+      <tr><td class="url small">{{ i.src }}</td>
+        <td class="small">{% if not i.alt_present %}<span class="sev-text-medium">{{ t('detail.alt_missing') }}</span>{% elif i.decorative %}<span class="muted">{{ t('detail.decorative') }}</span>{% else %}{{ i.alt }}{% endif %}</td>
+        <td class="small">{{ i.width or '—' }} × {{ i.height or '—' }}</td>
+        <td class="small">{{ i.loading or '—' }}</td>
+        <td>{% if i.status_code %}{{ m.status_badge(i.status_code) }}{% else %}<span class="muted small">{{ t('detail.not_checked') if i.is_internal else t('detail.external') }}</span>{% endif %}</td>
+        <td class="num small">{{ i.size_bytes|bytes }}</td></tr>
+    {% endfor %}
+    </tbody></table>
+    {% else %}<p class="card-body muted">{{ t('detail.none') }}</p>{% endif %}
+  </div>
+</div>
+
+<div class="card mt" id="render">
+  <div class="card-head"><h2>{{ t('detail.section_render') }}</h2></div>
+  <div class="card-body">
+    {% if page.rendered %}
+    <table class="data"><thead><tr><th></th><th>{{ t('detail.raw_html') }}</th><th>{{ t('detail.rendered_dom') }}</th></tr></thead><tbody>
+      {% for label, raw, ren in [('Title', page.raw_title, page.rendered_title), ('H1', page.raw_h1, page.rendered_h1), ('Canonical', page.raw_canonical, page.rendered_canonical), ('Meta robots', page.raw_meta_robots, page.rendered_meta_robots), (t('columns.words'), page.raw_word_count, page.rendered_word_count), (t('detail.links'), page.raw_link_count, page.rendered_link_count)] %}
+      <tr><th>{{ label }}</th><td class="small break {{ 'diff-old' if raw != ren }}">{{ raw if raw is not none else '—' }}</td><td class="small break {{ 'diff-new' if raw != ren }}">{{ ren if ren is not none else '—' }}</td></tr>
+      {% endfor %}
+      <tr><th>{{ t('detail.render_only_links') }}</th><td colspan="2">{{ page.render_only_links or 0 }}</td></tr>
+    </tbody></table>
+    {% elif page.render_error %}
+    <div class="alert alert-warn">{{ icon('issues') }}<div>{{ t('detail.render_error') }}: <span class="mono small">{{ page.render_error }}</span></div></div>
+    {% else %}
+    <p class="muted">{{ t('detail.not_rendered') }}</p>
+    <table class="kv"><tr><th>{{ t('columns.words') }}</th><td>{{ page.raw_word_count if page.raw_word_count is not none else '—' }}</td></tr><tr><th>{{ t('detail.links') }}</th><td>{{ page.raw_link_count if page.raw_link_count is not none else '—' }}</td></tr></table>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-09 — Aşama 4 tamamlandı: Yönetim paneli
+- `web/routes/crawls.py`: izin onaylı başlatma (onaysız istek reddedilir), canlı ilerleme (HTMX 1 sn polling, bitince HX-Refresh), durdur/devam/sil, URL tablosu (sunucu tarafı arama, 7 filtre, beyaz listeli sıralama, sayfalama, seçili satır CSV), URL detayı (HTTP, indexability üçlü ayrımı, meta, başlık ağacı, gelen/giden bağlantı, görseller, yapılandırılmış veri, sorunlar, ham/render karşılaştırması), sorunlar ekranı (önem/kategori filtresi, açılır gruplar, etkilenen URL'ler + kanıt + çözüm).
+- `pages_repo.py`, `issues_repo.py`; `reports/csv_export.py` (10 tür + seçili satırlar, BOM, formula injection koruması, güvenli dosya adı).
+- Çeviriler: `{tr,en}.ui-crawl.json` (kategoriler, olaylar, indexability nedenleri, bağlantı hatası açıklamaları + çözüm önerileri).
+- Görsel kontrol: canlı ilerleme, genel bakış, URL tablosu, URL detayı, sorunlar ekranları Playwright ile ekran görüntüsü alınarak doğrulandı.
+- Testler: 127/127 geçti (yeni: `tests/test_web_e2e.py` — UI üzerinden uçtan uca başarılı senaryo).
+
 ## 2026-10-09 — Aşama 3 tamamlandı: SEO analizleri
 - `analysis/issues.py`: 100+ sorun kodu (kategori, temel önem, page/site kapsamı). Metinler `i18n/locales/{tr,en}.issues-{a,b}.json` (i18n artık `<dil>.*.json` parçalarını birleştiriyor).
 - `analysis/checks/page_checks.py`: HTTP/URL, title, description, heading, canonical, robots direktifleri, görseller, bağlantılar, içerik, render farkları, yapılandırılmış veri, OG/Twitter, hreflang.

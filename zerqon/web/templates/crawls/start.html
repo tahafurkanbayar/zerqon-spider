@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}{{ t('crawl.start') }} · {{ project.name }}{% endblock %}
+{% block crumbs %}<a href="/projects">{{ t('nav.projects') }}</a><span class="sep">/</span><a href="/projects/{{ project.id }}">{{ project.name }}</a><span class="sep">/</span>{{ t('crawl.start') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ t('crawl.start_title') }}</h1><p class="sub">{{ project.start_url }}</p></div>
+</div>
+{% if error %}
+<div class="alert alert-error" role="alert">{{ icon('issues') }}<div>{{ t('crawl_errors.' ~ error, t('crawl_errors.generic')) }}</div></div>
+{% endif %}
+<div class="grid grid-3">
+  <form method="post" class="card span-2">
+    <div class="card-head"><h2>{{ t('crawl.permission_title') }}</h2></div>
+    <div class="card-body stack">
+      <p>{{ t('crawl.permission_text') }}</p>
+      <ul class="muted small">
+        <li>{{ t('crawl.permission_point_robots') }}</li>
+        <li>{{ t('crawl.permission_point_limits') }}</li>
+        <li>{{ t('crawl.permission_point_scope') }}</li>
+        <li>{{ t('crawl.permission_point_local') }}</li>
+      </ul>
+      <label class="check alert alert-warn" style="margin:0">
+        <input type="checkbox" name="permission_confirmed" data-permission required>
+        <span><b>{{ t('crawl.permission_checkbox') }}</b><br><span class="small muted">{{ t('crawl.permission_note') }}</span></span>
+      </label>
+      {% if settings.allow_localhost and not localhost_enabled %}
+      <div class="alert alert-warn" style="margin:0">{{ icon('info') }}<div>{{ t('crawl.localhost_env_off') }}</div></div>
+      {% endif %}
+      <div class="form-actions">
+        <a class="btn" href="/projects/{{ project.id }}">{{ t('forms.cancel') }}</a>
+        <a class="btn" href="/projects/{{ project.id }}/edit">{{ icon('settings') }} {{ t('crawl.change_settings') }}</a>
+        <button class="btn btn-primary" type="submit" data-requires-permission disabled>{{ icon('play') }} {{ t('crawl.start') }}</button>
+      </div>
+    </div>
+  </form>
+  <div class="card">
+    <div class="card-head"><h2>{{ t('projects.settings_summary') }}</h2></div>
+    <div class="card-body">
+      <table class="kv">
+        <tr><th>{{ t('settings_form.max_urls') }}</th><td>{{ settings.max_urls|number(lang) }}</td></tr>
+        <tr><th>{{ t('settings_form.max_depth') }}</th><td>{{ settings.max_depth }}</td></tr>
+        <tr><th>{{ t('settings_form.concurrency') }}</th><td>{{ settings.concurrency }}</td></tr>
+        <tr><th>{{ t('settings_form.delay_ms') }}</th><td>{{ settings.delay_ms }} ms</td></tr>
+        <tr><th>{{ t('settings_form.render_mode') }}</th><td>{{ t('render_mode.' ~ settings.render_mode) }}</td></tr>
+        <tr><th>{{ t('settings_form.use_sitemaps') }}</th><td>{{ t('common.yes') if settings.use_sitemaps else t('common.no') }}</td></tr>
+        <tr><th>{{ t('settings_form.include_subdomains') }}</th><td>{{ t('common.yes') if settings.include_subdomains else t('common.no') }}</td></tr>
+        {% if settings.include_patterns %}<tr><th>{{ t('settings_form.include_patterns') }}</th><td class="mono small break">{{ settings.include_patterns }}</td></tr>{% endif %}
+        {% if settings.exclude_patterns %}<tr><th>{{ t('settings_form.exclude_patterns') }}</th><td class="mono small break">{{ settings.exclude_patterns }}</td></tr>{% endif %}
+      </table>
+      <p class="disclaimer mt">{{ icon('info', 14) }} {{ t('crawl.settings_snapshot_note') }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

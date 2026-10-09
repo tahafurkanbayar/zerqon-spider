@@ -1,0 +1,54 @@
+{% import "macros.html" as m %}
+{% set lang = t.language %}
+{% set p = progress %}
+{% set done = p.crawled %}
+{% set total_known = p.crawled + p.queued %}
+<div class="card">
+  <div class="card-head">
+    <h2 class="row"><span class="pulse"></span> {{ t('crawl.phase_' ~ p.phase, p.phase) }}</h2>
+    <span class="small muted">{{ t('crawl.elapsed') }}: <b>{{ p.elapsed|duration }}</b></span>
+  </div>
+  <div class="card-body stack">
+    <div>
+      {% set pct = (done / max_urls * 100) if max_urls else 0 %}
+      <div class="progress {{ 'indeterminate' if p.phase in ('robots', 'sitemaps', 'starting', 'analyzing') }}" role="progressbar" aria-valuenow="{{ done }}" aria-valuemax="{{ max_urls }}">
+        <span style="width:{{ [pct, 100]|min|round(1) }}%"></span>
+      </div>
+      <div class="row small muted mt" style="justify-content:space-between">
+        <span>{{ t('crawl.progress_of_limit', n=done|number(lang), limit=max_urls|number(lang)) }}</span>
+        {% if p.limit_reached %}<b>{{ t('crawl.limit_reached') }}</b>{% endif %}
+      </div>
+    </div>
+    <div class="grid grid-6">
+      <div class="kpi"><div class="label">{{ t('crawl.crawled') }}</div><div class="value">{{ p.crawled|number(lang) }}</div></div>
+      <div class="kpi"><div class="label">{{ t('crawl.queued') }}</div><div class="value">{{ p.queued|number(lang) }}</div></div>
+      <div class="kpi"><div class="label">{{ t('crawl.failed') }}</div><div class="value st-5xx">{{ p.failed|number(lang) }}</div></div>
+      <div class="kpi"><div class="label">{{ t('crawl.rate') }}</div><div class="value">{{ p.rate }}</div><div class="hint">URL/sn</div></div>
+      <div class="kpi"><div class="label">{{ t('crawl.issues_found') }}</div><div class="value">{{ (p.issues if p.issues is not none else '—')|number(lang) }}</div></div>
+      <div class="kpi"><div class="label">{{ t('crawl.rendered') }}</div><div class="value">{{ (p.rendered or 0)|number(lang) }}</div></div>
+    </div>
+    <div class="small"><span class="muted">{{ t('crawl.last_url') }}:</span> <span class="mono break">{{ p.last_url or '—' }}</span></div>
+  </div>
+</div>
+<div class="grid grid-2 mt">
+  <div class="card">
+    <div class="card-head"><h2>{{ t('crawl.recent_urls') }}</h2></div>
+    <div class="card-body flush table-wrap">
+      <table class="data"><tbody>
+      {% for r in recent_pages %}
+        <tr><td>{{ m.status_badge(r.status_code, r.fetch_status, t) }}</td><td class="url small">{{ r.url }}</td><td class="num small">{{ r.response_time_ms or '—' }} ms</td></tr>
+      {% else %}<tr><td class="muted">{{ t('crawl.waiting') }}</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>{{ t('crawl.live_issues') }}</h2></div>
+    <div class="card-body flush table-wrap">
+      <table class="data"><tbody>
+      {% for i in recent_issues %}
+        <tr><td>{{ m.severity_badge(t, i.severity) }}</td><td>{{ t('issues.' ~ i.code ~ '.name') }}<div class="small muted break">{{ i.url or '' }}</div></td></tr>
+      {% else %}<tr><td class="muted">{{ t('crawl.waiting') }}</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+</div>

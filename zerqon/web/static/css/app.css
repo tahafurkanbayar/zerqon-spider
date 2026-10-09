@@ -258,7 +258,8 @@ table.data th a { color: inherit; display: inline-flex; gap: 4px; align-items: c
 table.data th a.sorted { color: var(--accent); }
 table.data td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
 table.data tr:hover td { background: var(--surface-2); }
-table.data td.url { max-width: 420px; word-break: break-all; }
+table.data td.url { min-width: 260px; max-width: 420px; word-break: break-all; }
+table.data td.clip { min-width: 140px; }
 table.data td.clip { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 table.data td.num, table.data th.num { text-align: right; font-variant-numeric: tabular-nums; }
 table.kv { width: 100%; border-collapse: collapse; font-size: 13px; }

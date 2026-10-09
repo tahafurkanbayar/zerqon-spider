@@ -1,0 +1,31 @@
+{% extends "crawls/base_crawl.html" %}
+{% block title %}{{ t('crawl.tab_issues') }} · {{ project.name }}{% endblock %}
+{% block crawl_content %}
+<div class="grid grid-6 mb">
+  {% for sev in SEVERITY_ORDER %}
+  <a class="card kpi" href="?severity={{ sev }}" hx-get="?severity={{ sev }}" hx-target="#issues-list" hx-push-url="true" style="color:inherit;text-decoration:none">
+    <div class="label">{{ m.severity_badge(t, sev) }}</div>
+    <div class="value sev-text-{{ sev }}">{{ severity_counts[sev]|number(lang) }}</div>
+  </a>
+  {% endfor %}
+  <a class="card kpi" href="/crawls/{{ job.id }}/export/issues.csv" style="color:inherit;text-decoration:none">
+    <div class="label">{{ icon('download', 14) }} CSV</div>
+    <div class="hint">{{ t('issues_ui.export_all') }}</div>
+  </a>
+</div>
+<div class="card">
+  <form class="toolbar" hx-get="/crawls/{{ job.id }}/issues" hx-target="#issues-list" hx-push-url="true" hx-trigger="change">
+    <select name="severity" aria-label="{{ t('issues_ui.severity') }}">
+      <option value="">{{ t('table.all_severities') }}</option>
+      {% for sev in SEVERITY_ORDER %}<option value="{{ sev }}" {{ 'selected' if severity == sev }}>{{ t('severity.' ~ sev) }}</option>{% endfor %}
+    </select>
+    <select name="category" aria-label="{{ t('issues_ui.category') }}">
+      <option value="">{{ t('issues_ui.all_categories') }}</option>
+      {% for c in categories %}<option value="{{ c }}" {{ 'selected' if category == c }}>{{ t('categories.' ~ c) }}</option>{% endfor %}
+    </select>
+    <noscript><button class="btn" type="submit">{{ t('table.apply') }}</button></noscript>
+    <span class="small muted">{{ t('issues_ui.prioritization_note') }}</span>
+  </form>
+  <div id="issues-list">{% include "crawls/_issues_list.html" %}</div>
+</div>
+{% endblock %}

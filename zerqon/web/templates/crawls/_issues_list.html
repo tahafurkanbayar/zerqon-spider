@@ -1,0 +1,26 @@
+{% import "macros.html" as m %}
+{% set lang = t.language %}
+{% if groups %}
+  {% for g in groups %}
+  <details class="issue-group" id="issue-{{ g.code }}">
+    <summary hx-get="/crawls/{{ crawl_id }}/issues/{{ g.code }}" hx-target="#urls-{{ g.code }}" hx-trigger="click once" hx-swap="innerHTML">
+      <span>{{ m.severity_badge(t, g.severity) }}</span>
+      <span><b>{{ t('issues.' ~ g.code ~ '.name') }}</b> <span class="small muted">· {{ t('categories.' ~ g.category) }}</span></span>
+      <span class="small muted nowrap">{{ t('issues_ui.urls_n', n=g.urls|number(lang)) }}</span>
+      <span class="small muted nowrap">{% for sev in SEVERITY_ORDER %}{% if g['n_' ~ sev] %}<span class="sev-text-{{ sev }}" title="{{ t('severity.' ~ sev) }}">●{{ g['n_' ~ sev] }} </span>{% endif %}{% endfor %}</span>
+    </summary>
+    <div class="issue-body">
+      <div class="grid grid-2">
+        <div><h3>{{ t('issues_ui.what') }}</h3><p class="small">{{ t('issues.' ~ g.code ~ '.desc') }}</p></div>
+        <div><h3>{{ t('issues_ui.fix') }}</h3><p class="small">{{ t('issues.' ~ g.code ~ '.fix') }}</p></div>
+      </div>
+      <div class="row mb">
+        <a class="btn btn-sm" href="/crawls/{{ crawl_id }}/pages?issue={{ g.code }}">{{ icon('pages', 14) }} {{ t('issues_ui.open_in_table') }}</a>
+      </div>
+      <div id="urls-{{ g.code }}"><span class="spinner htmx-indicator"></span></div>
+    </div>
+  </details>
+  {% endfor %}
+{% else %}
+  {{ m.empty(t('issues_ui.none_found'), t('issues_ui.none_found_hint'), 'check') }}
+{% endif %}

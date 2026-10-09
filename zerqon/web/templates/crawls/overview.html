@@ -1,0 +1,157 @@
+{% extends "crawls/base_crawl.html" %}
+{% block title %}{{ t('crawl.crawl_n', n=job.id) }} · {{ project.name }}{% endblock %}
+{% block crawl_content %}
+<div class="page-head">
+  <div>
+    <h1>{{ project.name }} — {{ t('crawl.crawl_n', n=job.id) }}</h1>
+    <p class="sub">{{ t('crawl.started') }}: {{ job.started_at|dt }}{% if job.finished_at %} · {{ t('crawl.finished') }}: {{ job.finished_at|dt }}{% endif %}{% if job.resume_count %} · {{ t('crawl.resumed_n', n=job.resume_count) }}{% endif %}</p>
+  </div>
+  <div class="row">
+    {% if is_active %}
+      <form method="post" action="/crawls/{{ job.id }}/stop" data-confirm="{{ t('crawl.stop_confirm') }}">
+        <button class="btn btn-danger" type="submit" {{ 'disabled' if job.status == 'stopping' }}>{{ icon('stop') }} {{ t('crawl.stop') }}</button>
+      </form>
+    {% else %}
+      {% if resumable %}
+      <form method="post" action="/crawls/{{ job.id }}/resume"><button class="btn btn-primary" type="submit">{{ icon('resume') }} {{ t('crawl.resume') }}</button></form>
+      {% endif %}
+      {% if previous %}<a class="btn" href="/compare?a={{ previous.id }}&b={{ job.id }}">{{ icon('compare') }} {{ t('crawl.compare_previous') }}</a>{% endif %}
+      <a class="btn" href="/crawls/{{ job.id }}/reports">{{ icon('report') }} {{ t('crawl.tab_reports') }}</a>
+      <form method="post" action="/crawls/{{ job.id }}/delete" data-confirm="{{ t('crawl.delete_confirm') }}">
+        <button class="btn btn-danger btn-icon" type="submit" title="{{ t('crawl.delete') }}" aria-label="{{ t('crawl.delete') }}">{{ icon('trash') }}</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+{% if job.status == 'interrupted' %}
+<div class="alert alert-warn">{{ icon('issues') }}<div><b>{{ t('crawl.interrupted_title') }}</b><br>{{ t('crawl.interrupted_text') }}</div></div>
+{% elif job.status == 'failed' %}
+<div class="alert alert-error">{{ icon('issues') }}<div><b>{{ t('crawl_errors.failed_title') }}</b><br>{{ t('crawl_errors.' ~ (job.error_code or 'internal_error'), t('crawl_errors.generic')) }}</div></div>
+{% elif job.status == 'cancelled' %}
+<div class="alert alert-info">{{ icon('info') }}<div>{{ t('crawl.cancelled_text') }}</div></div>
+{% endif %}
+
+{% if is_active %}
+<div id="live-progress" hx-get="/crawls/{{ job.id }}/progress" hx-trigger="every 1s" hx-swap="innerHTML">
+  {% set max_urls = crawl_settings.max_urls %}
+  {% include "crawls/_progress.html" %}
+</div>
+{% else %}
+{% set snap = snapshot or {} %}
+<div class="grid grid-4">
+  <div class="card kpi accent">
+    <div class="label">{{ t('score.label') }}</div>
+    <div class="row" style="gap:16px;margin-top:6px">{{ m.score_ring(t, snap.health_score, snap.score_confidence, 96) }}</div>
+  </div>
+  <div class="card kpi">
+    <div class="label">{{ icon('pages', 14) }} {{ t('crawl.urls_total') }}</div>
+    <div class="value">{{ (snap.pages_total or 0)|number(lang) }}</div>
+    <div class="hint">{{ t('crawl.html_pages', n=(snap.pages_html or 0)|number(lang)) }}{% if job.limit_reached %} · <b>{{ t('crawl.limit_reached') }}</b>{% endif %}</div>
+  </div>
+  <div class="card kpi">
+    <div class="label">{{ t('dashboard.indexability') }}</div>
+    <div class="value idx-indexable">{{ (snap.indexable or 0)|number(lang) }}</div>
+    <div class="hint">{{ t('indexability.non_indexable') }}: {{ (snap.non_indexable or 0)|number(lang) }}</div>
+  </div>
+  <div class="card kpi">
+    <div class="label">{{ t('dashboard.avg_response') }}</div>
+    <div class="value">{{ (snap.avg_response_ms|round|int|number(lang) ~ ' ms') if snap.avg_response_ms else '—' }}</div>
+    <div class="hint">{{ t('dashboard.avg_response_hint') }}</div>
+  </div>
+</div>
+
+<div class="grid grid-6 mt">
+  {% for sev in SEVERITY_ORDER %}
+  <a class="card kpi" href="/crawls/{{ job.id }}/issues?severity={{ sev }}" style="color:inherit;text-decoration:none">
+    <div class="label">{{ m.severity_badge(t, sev) }}</div>
+    <div class="value sev-text-{{ sev }}">{{ severity_counts[sev]|number(lang) }}</div>
+  </a>
+  {% endfor %}
+  <a class="card kpi" href="/crawls/{{ job.id }}/pages?status=4xx" style="color:inherit;text-decoration:none">
+    <div class="label">{{ t('crawl.errors_4xx_5xx') }}</div>
+    <div class="value st-4xx">{{ ((snap.status_4xx or 0) + (snap.status_5xx or 0))|number(lang) }}</div>
+  </a>
+</div>
+
+<div class="grid grid-3 mt">
+  <div class="card span-2">
+    <div class="card-head"><h2>{{ t('crawl.top_issues') }}</h2><a class="small" href="/crawls/{{ job.id }}/issues">{{ t('crawl.all_issues') }} →</a></div>
+    <div class="card-body flush table-wrap">
+      {% if top_issues %}
+      <table class="data">
+        <thead><tr><th>{{ t('issues_ui.severity') }}</th><th>{{ t('issues_ui.issue') }}</th><th>{{ t('issues_ui.category') }}</th><th class="num">URL</th></tr></thead>
+        <tbody>
+        {% for g in top_issues %}
+          <tr>
+            <td>{{ m.severity_badge(t, g.severity) }}</td>
+            <td><a href="/crawls/{{ job.id }}/issues#issue-{{ g.code }}">{{ t('issues.' ~ g.code ~ '.name') }}</a></td>
+            <td class="small muted">{{ t('categories.' ~ g.category) }}</td>
+            <td class="num">{{ g.urls|number(lang) }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}{{ m.empty(t('issues_ui.none_found'), '', 'check') }}{% endif %}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>{{ t('dashboard.status_distribution') }}</h2></div>
+    <div class="card-body">
+      {% set total = snap.pages_total or 0 %}
+      {% if total %}
+      <div class="bars">
+        {% for key, cls, filt in [('status_2xx', 'st-2xx', '2xx'), ('status_3xx', 'st-3xx', '3xx'), ('status_4xx', 'st-4xx', '4xx'), ('status_5xx', 'st-5xx', '5xx'), ('blocked_robots', 'st-err', 'blocked'), ('pages_failed', 'st-err', 'error')] %}
+        <div class="bar-row">
+          <a class="{{ cls }}" href="/crawls/{{ job.id }}/pages?status={{ filt }}">{{ t('crawl.dist_' ~ key) }}</a>
+          <div class="bar-track"><div class="bar-fill {{ cls }}" style="width:{{ ((snap[key] or 0) / total * 100)|round(1) }}%;background:currentColor"></div></div>
+          <span class="right small">{{ (snap[key] or 0)|number(lang) }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}{{ m.empty(t('dashboard.no_data')) }}{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-2 mt">
+  <div class="card">
+    <div class="card-head"><h2>{{ t('crawl.categories') }}</h2></div>
+    <div class="card-body">
+      {% if categories %}
+      {% set maxn = categories[0].n %}
+      <div class="bars">
+        {% for c in categories %}
+        <div class="bar-row">
+          <a href="/crawls/{{ job.id }}/issues?category={{ c.category }}">{{ t('categories.' ~ c.category) }}</a>
+          <div class="bar-track"><div class="bar-fill" style="width:{{ (c.n / maxn * 100)|round(1) }}%"></div></div>
+          <span class="right small">{{ c.n|number(lang) }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}{{ m.empty(t('issues_ui.none_found'), '', 'check') }}{% endif %}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>{{ t('crawl.events') }}</h2></div>
+    <div class="card-body">
+      {% if events %}
+      <ul class="list-plain">
+        {% for e in events %}
+        <li class="row" style="align-items:flex-start;flex-wrap:nowrap">
+          <span class="badge {{ 'sev-high' if e.level == 'error' else ('sev-medium' if e.level == 'warning' else 'sev-info') }}">{{ t('event_levels.' ~ e.level) }}</span>
+          <div><div>{{ t('events.' ~ e.code, e.code) }}</div>{% if e.detail %}<div class="small muted mono break">{{ e.detail }}</div>{% endif %}</div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}<p class="muted">{{ t('crawl.no_events') }}</p>{% endif %}
+      <table class="kv mt">
+        <tr><th>robots.txt</th><td>{{ t('robots_status.' ~ (job.robots_status or 'unknown')) }}</td></tr>
+        <tr><th>{{ t('settings_form.max_urls') }}</th><td>{{ crawl_settings.max_urls|number(lang) }}{% if job.limit_reached %} · <b>{{ t('crawl.limit_reached') }}</b>{% endif %}</td></tr>
+        <tr><th>{{ t('settings_form.max_depth') }}</th><td>{{ crawl_settings.max_depth }}</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -2,8 +2,8 @@
 
 {% macro flash(t, key) -%}
   {% if key.startswith('flash.') and t.has(key) %}
-  {% set kind = 'error' if key.endswith('_busy') or key.endswith('_failed') or key.endswith('_error') else 'success' %}
-  <div class="alert alert-{{ kind }}" role="status">{{ icon('check' if kind == 'success' else 'issues') }}<div>{{ t(key) }}</div></div>
+  {% set kind = 'error' if ('_busy' in key or key.startswith('flash.resume_') or key.endswith('_failed') or key.endswith('_error')) else ('info' if key.endswith('_stopping') else 'success') %}
+  <div class="alert alert-{{ kind }}" role="status">{{ icon('check' if kind == 'success' else ('info' if kind == 'info' else 'issues')) }}<div>{{ t(key) }}</div></div>
   {% endif %}
 {%- endmacro %}
 

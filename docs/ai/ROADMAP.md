@@ -35,13 +35,13 @@
 - [x] Önceliklendirme motoru
 
 ## Aşama 4 — Yönetim paneli
-- [ ] Dashboard
-- [ ] Proje CRUD + ayarlar
-- [ ] İzin onaylı tarama başlatma
-- [ ] Gerçek zamanlı ilerleme + durdur/devam
-- [ ] URL tablosu (sunucu tarafı filtre/sıralama/sayfalama, seçili satır dışa aktarma)
-- [ ] URL detay sayfası
-- [ ] Sorunlar ekranı
+- [x] Dashboard
+- [x] Proje CRUD + ayarlar
+- [x] İzin onaylı tarama başlatma
+- [x] Gerçek zamanlı ilerleme + durdur/devam
+- [x] URL tablosu (sunucu tarafı filtre/sıralama/sayfalama, seçili satır dışa aktarma)
+- [x] URL detay sayfası
+- [x] Sorunlar ekranı
 
 ## Aşama 5 — Raporlama ve geçmiş
 - [ ] CSV dışa aktarma (10 tür, BOM, formula injection koruması)

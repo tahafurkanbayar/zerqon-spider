@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block crumbs %}<a href="/projects">{{ t('nav.projects') }}</a><span class="sep">/</span><a href="/projects/{{ project.id }}">{{ project.name }}</a><span class="sep">/</span>{{ t('crawl.crawl_n', n=job.id) }}{% endblock %}
+{% block topbar_context %}
+  {{ m.crawl_status(t, job.status) }}
+  <span class="badge">{{ icon('globe', 12) }} {{ job.start_url|middle(40) }}</span>
+  <span class="badge">{{ t('render_mode.' ~ crawl_settings.render_mode) }}</span>
+{% endblock %}
+{% block sidebar_extra %}
+  <div class="nav-label">{{ t('crawl.crawl_n', n=job.id) }}</div>
+  <a href="/crawls/{{ job.id }}" class="{{ 'active' if tab == 'overview' }}">{{ icon('crawl') }} {{ t('crawl.tab_overview') }}</a>
+  <a href="/crawls/{{ job.id }}/pages" class="{{ 'active' if tab == 'pages' }}">{{ icon('pages') }} {{ t('crawl.tab_pages') }}</a>
+  <a href="/crawls/{{ job.id }}/issues" class="{{ 'active' if tab == 'issues' }}">{{ icon('issues') }} {{ t('crawl.tab_issues') }}</a>
+  <a href="/crawls/{{ job.id }}/reports" class="{{ 'active' if tab == 'reports' }}">{{ icon('report') }} {{ t('crawl.tab_reports') }}</a>
+{% endblock %}
+{% block content %}
+<div class="tabs" role="tablist">
+  <a href="/crawls/{{ job.id }}" class="{{ 'active' if tab == 'overview' }}">{{ icon('crawl', 16) }} {{ t('crawl.tab_overview') }}</a>
+  <a href="/crawls/{{ job.id }}/pages" class="{{ 'active' if tab == 'pages' }}">{{ icon('pages', 16) }} {{ t('crawl.tab_pages') }}</a>
+  <a href="/crawls/{{ job.id }}/issues" class="{{ 'active' if tab == 'issues' }}">{{ icon('issues', 16) }} {{ t('crawl.tab_issues') }}</a>
+  <a href="/crawls/{{ job.id }}/reports" class="{{ 'active' if tab == 'reports' }}">{{ icon('report', 16) }} {{ t('crawl.tab_reports') }}</a>
+</div>
+{% block crawl_content %}{% endblock %}
+{% endblock %}

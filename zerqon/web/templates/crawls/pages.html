@@ -1,0 +1,49 @@
+{% extends "crawls/base_crawl.html" %}
+{% block title %}{{ t('crawl.tab_pages') }} · {{ project.name }}{% endblock %}
+{% block crawl_content %}
+<div class="card">
+  <form class="toolbar" hx-get="/crawls/{{ job.id }}/pages" hx-target="#pages-table" hx-push-url="true"
+        hx-trigger="input changed delay:350ms from:input[name=q], change from:select, submit" hx-indicator="#table-loading">
+    <div class="search">{{ icon('search', 16) }}
+      <label class="sr-only" for="q">{{ t('table.search') }}</label>
+      <input type="search" id="q" name="q" value="{{ query.q }}" placeholder="{{ t('table.search_placeholder') }}">
+    </div>
+    <select name="status" aria-label="{{ t('table.filter_status') }}">
+      <option value="">{{ t('table.all_statuses') }}</option>
+      {% for s in ['2xx', '3xx', '4xx', '5xx', 'error', 'blocked'] %}<option value="{{ s }}" {{ 'selected' if query.status == s }}>{{ t('table.status_' ~ s) }}</option>{% endfor %}
+    </select>
+    <select name="indexability" aria-label="{{ t('dashboard.indexability') }}">
+      <option value="">{{ t('table.all_indexability') }}</option>
+      <option value="indexable" {{ 'selected' if query.indexability == 'indexable' }}>{{ t('indexability.indexable') }}</option>
+      <option value="non_indexable" {{ 'selected' if query.indexability == 'non_indexable' }}>{{ t('indexability.non_indexable') }}</option>
+    </select>
+    <select name="content" aria-label="{{ t('table.filter_type') }}">
+      <option value="">{{ t('table.all_types') }}</option>
+      <option value="html" {{ 'selected' if query.content == 'html' }}>HTML</option>
+      <option value="other" {{ 'selected' if query.content == 'other' }}>{{ t('table.type_other') }}</option>
+    </select>
+    <select name="issue" aria-label="{{ t('table.filter_issue') }}">
+      <option value="">{{ t('table.all_issues') }}</option>
+      {% for code in issue_codes %}<option value="{{ code }}" {{ 'selected' if query.issue == code }}>{{ t('issues.' ~ code ~ '.name') }}</option>{% endfor %}
+    </select>
+    <select name="severity" aria-label="{{ t('issues_ui.severity') }}">
+      <option value="">{{ t('table.all_severities') }}</option>
+      {% for sev in SEVERITY_ORDER %}<option value="{{ sev }}" {{ 'selected' if query.severity == sev }}>{{ t('severity.' ~ sev) }}</option>{% endfor %}
+    </select>
+    <select name="sitemap" aria-label="Sitemap">
+      <option value="">{{ t('table.sitemap_any') }}</option>
+      <option value="yes" {{ 'selected' if query.sitemap == 'yes' }}>{{ t('table.sitemap_yes') }}</option>
+      <option value="no" {{ 'selected' if query.sitemap == 'no' }}>{{ t('table.sitemap_no') }}</option>
+    </select>
+    <input type="hidden" name="sort" value="{{ query.sort }}"><input type="hidden" name="dir" value="{{ query.dir }}">
+    <select name="per_page" aria-label="{{ t('table.per_page') }}">
+      {% for n in per_page_options %}<option value="{{ n }}" {{ 'selected' if query.per_page == n }}>{{ n }} / {{ t('table.page') }}</option>{% endfor %}
+    </select>
+    <span id="table-loading" class="htmx-indicator"><span class="spinner"></span></span>
+    <noscript><button class="btn" type="submit">{{ t('table.apply') }}</button></noscript>
+  </form>
+  <div id="pages-table">
+    {% include "crawls/_pages_table.html" %}
+  </div>
+</div>
+{% endblock %}
