@@ -1,6 +1,6 @@
 """Zerqon Spider — Advanced SEO Crawler & Auditor."""
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 BRAND_NAME = "Zerqon"
 PRODUCT_NAME = "Zerqon Spider"

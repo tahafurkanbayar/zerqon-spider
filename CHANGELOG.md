@@ -5,6 +5,19 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır; 
 
 ## [Yayımlanmamış]
 
+## [1.1.0] — 2026-10-10
+
+### Eklendi
+- **Windows masaüstü uygulaması:** taşınabilir tek dosya `ZerqonSpider-<sürüm>-windows-x64.exe` (Python kurulumu gerekmez). Arayüz pywebview + WebView2 ile yerel bir pencerede açılır; arka plan sunucusu yalnızca `127.0.0.1` üzerinde boş bir portta dinler ve pencere kapanınca durur. Tek örnek kilidi, ekrana sığan pencere boyutu, dosya sürüm bilgisi ve uygulama ikonu.
+- **Chromium'u arayüzden kurma:** Ayarlar → *JavaScript render motoru* kartı Chromium headless shell'in kurulu olup olmadığını gösterir ve tek tıkla indirip kurar (~100 MB, ilerleme otomatik yenilenir).
+- Paketlenmiş sürümde veriler ve `.env` kullanıcı klasöründe: `%LOCALAPPDATA%\Zerqon Spider\`.
+- `packaging/windows/build.py`: PyInstaller paketi + `--smoke-test` doğrulaması + SHA-256 dosyası. `make_icon.py` ile logodan çok boyutlu ikon.
+- GitHub Actions (`windows-build.yml`): her yayımlanan sürümde testler, paketleme, smoke test ve `.exe`'nin yayına eklenmesi.
+- Ayarlar ekranında yapılandırma dosyasının konumu.
+
+### Değişti
+- "JavaScript render başlatılamadı" olayı artık Ayarlar ekranındaki kurulum kartına yönlendiriyor.
+
 ## [1.0.0] — 2026-10-10
 
 İlk kararlı sürüm.
@@ -28,5 +41,6 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır; 
 - Parametrik SQL, beyaz listeli sıralama sütunları, XSS kaçışı, güvenli dosya adları, loglarda gizli bilgi maskeleme.
 - Telemetri ve hesap sistemi yoktur.
 
-[Yayımlanmamış]: https://github.com/tahafurkanbayar/zerqon-spider/compare/v1.0.0...HEAD
+[Yayımlanmamış]: https://github.com/tahafurkanbayar/zerqon-spider/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/tahafurkanbayar/zerqon-spider/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/tahafurkanbayar/zerqon-spider/releases/tag/v1.0.0

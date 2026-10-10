@@ -230,6 +230,22 @@
     "bind": "Dinlenen adres",
     "localhost_mode": "Localhost modu",
     "localhost_help": ".env dosyasındaki ZERQON_ALLOW_LOCALHOST ile yönetilir.",
-    "appearance": "Görünüm"
+    "appearance": "Görünüm",
+    "config_file": "Yapılandırma dosyası",
+    "browser_title": "JavaScript render motoru",
+    "browser_text": "JavaScript ve Hibrit tarama modları Chromium (headless) kullanır. Standart tarama için gerekmez.",
+    "browser_checking": "Durum denetleniyor…",
+    "browser_installed": "Kurulu",
+    "browser_missing": "Kurulu değil",
+    "browser_location": "Konum",
+    "browser_install": "Chromium'u indir ve kur",
+    "browser_installing": "Chromium indiriliyor ve kuruluyor… Bağlantı hızına göre birkaç dakika sürebilir.",
+    "browser_failed": "Kurulum başarısız oldu. İnternet bağlantısını denetleyip tekrar deneyin.",
+    "browser_size": "Yaklaşık 100 MB indirilir; yalnızca bir kez gerekir."
+  },
+  "desktop": {
+    "already_running": "Zerqon Spider zaten çalışıyor. Açık olan pencereyi kullanın.",
+    "webview2_missing": "Uygulama penceresi açılamadı. Microsoft Edge WebView2 Runtime gerekli:\nhttps://developer.microsoft.com/microsoft-edge/webview2/\n\nAyrıntı: {error}",
+    "start_failed": "Yerel sunucu başlatılamadı. Ayrıntılar log dosyasında:\n{logs}\n\n{error}"
   }
 }

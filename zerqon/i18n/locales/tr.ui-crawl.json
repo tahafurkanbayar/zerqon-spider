@@ -121,7 +121,11 @@
     "robots": "robots.txt",
     "mobile": "Mobil"
   },
-  "event_levels": {"info": "Bilgi", "warning": "Uyarı", "error": "Hata"},
+  "event_levels": {
+    "info": "Bilgi",
+    "warning": "Uyarı",
+    "error": "Hata"
+  },
   "events": {
     "localhost_disabled": "Localhost izni bu taramada seçili ama .env'de ZERQON_ALLOW_LOCALHOST kapalı; yerel adresler engellendi.",
     "crawl_delay_applied": "robots.txt Crawl-delay değeri uygulandı.",
@@ -134,7 +138,7 @@
     "sitemap_http_error": "Bir sitemap 200 dışında yanıt döndürdü.",
     "sitemap_invalid": "Bir sitemap ayrıştırılamadı (geçersiz XML).",
     "sitemap_limit": "Sitemap dosyası sınırına ulaşıldı; kalan sitemap'ler işlenmedi.",
-    "render_unavailable": "JavaScript render başlatılamadı (Chromium kurulu değil veya sistem bağımlılığı eksik). Tarama standart modda sürdü. Kurulum: python -m playwright install chromium"
+    "render_unavailable": "JavaScript render başlatılamadı (Chromium kurulu değil veya sistem bağımlılığı eksik). Tarama standart modda sürdü. Kurulum: Ayarlar → JavaScript render motoru."
   },
   "robots_status": {
     "ok": "Okundu ve uygulandı",

@@ -82,4 +82,6 @@
 | Sürüm | Durum | Kapsam |
 |---|---|---|
 | v1.0.0 | Yayımlandı (2026-10-10) | Aşama 1–6, §23 kabul kriterleri |
-| v1.1.0 | Planlanıyor | Kullanıcı geri bildirimine göre belirlenecek (adaylar: URL listesi içe aktarma, GSC entegrasyonu, kimlik doğrulamalı tarama, tam ISO hreflang tablosu) |
+| v1.1.0 | Yayımlandı (2026-10-10) | Windows masaüstü uygulaması (tek .exe, pywebview + PyInstaller), Chromium'u arayüzden kurma, CI ile exe derleme |
+| v1.2.0 | Planlanıyor | Kullanıcı geri bildirimine göre (adaylar: URL listesi içe aktarma, GSC entegrasyonu, kimlik doğrulamalı tarama, tam ISO hreflang tablosu, kurulum sihirbazı/otomatik güncelleme) |
+| Gelecek | Fikir | macOS / Linux paketleri, web (sunucu) sürümü — kullanıcı belirtti |

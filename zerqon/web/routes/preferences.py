@@ -7,7 +7,8 @@ import sqlite3
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, Response
 
-from zerqon.config import Settings
+from zerqon.browser_setup import BrowserInstaller
+from zerqon.config import Settings, config_root
 from zerqon.db.repositories import settings_repo
 from zerqon.i18n import SUPPORTED_LANGUAGES
 from zerqon.reports.backup import list_backups
@@ -30,6 +31,7 @@ def settings_page(request: Request, app_settings: Settings = Depends(get_app_set
             "data_dir": str(app_settings.resolved_data_dir),
             "db_path": str(app_settings.db_path),
             "logs_dir": str(app_settings.logs_dir),
+            "config_file": str(config_root() / ".env"),
             "allow_localhost": app_settings.allow_localhost,
             "bind": f"{app_settings.host}:{app_settings.port}",
             "msg": request.query_params.get("msg", ""),
@@ -37,6 +39,24 @@ def settings_page(request: Request, app_settings: Settings = Depends(get_app_set
             "backups_dir": str(app_settings.backups_dir),
         },
     )
+
+
+def _installer(request: Request) -> BrowserInstaller:
+    return request.app.state.browser_installer  # type: ignore[no-any-return]
+
+
+@router.get("/settings/browser", response_class=HTMLResponse)
+def browser_status(request: Request) -> HTMLResponse:
+    """JavaScript render motoru durumu (HTMX parçası; kurulum sürerken kendini yeniler)."""
+    return render(request, "partials/browser_status.html", {"st": _installer(request).status()})
+
+
+@router.post("/settings/browser/install", response_class=HTMLResponse)
+def browser_install(request: Request) -> HTMLResponse:
+    installer = _installer(request)
+    if not installer.status().installed:
+        installer.start()
+    return render(request, "partials/browser_status.html", {"st": installer.status()})
 
 
 @router.post("/preferences/language")

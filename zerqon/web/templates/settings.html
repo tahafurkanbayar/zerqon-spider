@@ -11,6 +11,7 @@
       <table class="kv">
         <tr><th>{{ t('app_settings.data_dir') }}</th><td class="mono small break">{{ data_dir }}</td></tr>
         <tr><th>{{ t('app_settings.db_path') }}</th><td class="mono small break">{{ db_path }}</td></tr>
+        <tr><th>{{ t('app_settings.config_file') }}</th><td class="mono small break">{{ config_file }}</td></tr>
         <tr><th>{{ t('app_settings.logs_dir') }}</th><td class="mono small break">{{ logs_dir }}</td></tr>
         <tr><th>{{ t('app_settings.bind') }}</th><td class="mono small">{{ bind }}</td></tr>
         <tr><th>{{ t('app_settings.localhost_mode') }}</th><td>{{ t('common.enabled') if allow_localhost else t('common.disabled') }}<div class="help small muted">{{ t('app_settings.localhost_help') }}</div></td></tr>
@@ -37,6 +38,12 @@
         <div><button class="btn" type="button" data-theme-toggle>{{ icon('moon', 16) }} {{ t('prefs.theme_cycle') }}</button></div>
       </div>
     </div>
+  </div>
+</div>
+<div class="card mt">
+  <div class="card-head"><h2>{{ t('app_settings.browser_title') }}</h2></div>
+  <div class="card-body" hx-get="/settings/browser" hx-trigger="load" hx-swap="innerHTML">
+    <p class="muted"><span class="spinner"></span> {{ t('app_settings.browser_checking') }}</p>
   </div>
 </div>
 <div class="card mt">

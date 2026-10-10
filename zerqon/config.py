@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+import sys
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -10,12 +12,34 @@ from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+APP_DIR_NAME = "Zerqon Spider"
+
+
+def is_frozen() -> bool:
+    """PyInstaller ile paketlenmiş masaüstü sürümünde mi çalışıyoruz?"""
+    return bool(getattr(sys, "frozen", False))
+
+
+def user_app_dir() -> Path:
+    """Kullanıcıya ait yazılabilir uygulama klasörü (paketlenmiş sürüm program klasörüne yazamaz)."""
+    if sys.platform == "win32":
+        base = Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData" / "Local")
+    elif sys.platform == "darwin":
+        base = Path.home() / "Library" / "Application Support"
+    else:
+        base = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share")
+    return base / APP_DIR_NAME
+
+
+def config_root() -> Path:
+    """`.env` ve varsayılan `data/` klasörünün bulunduğu kök: kaynak kodda proje kökü, paketlenmiş sürümde kullanıcı klasörü."""
+    return user_app_dir() if is_frozen() else PROJECT_ROOT
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="ZERQON_",
-        env_file=PROJECT_ROOT / ".env",
+        env_file=config_root() / ".env",
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -43,7 +67,7 @@ class Settings(BaseSettings):
 
     @property
     def resolved_data_dir(self) -> Path:
-        return (self.data_dir or PROJECT_ROOT / "data").resolve()
+        return (self.data_dir or config_root() / "data").resolve()
 
     @property
     def db_path(self) -> Path:

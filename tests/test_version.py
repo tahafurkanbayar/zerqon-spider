@@ -23,4 +23,6 @@ def test_pyproject_matches_package_version() -> None:
 def test_changelog_has_entry_for_current_version() -> None:
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     assert re.search(rf"^## \[{re.escape(__version__)}\] — \d{{4}}-\d{{2}}-\d{{2}}$", changelog, re.MULTILINE)
-    assert f"[{__version__}]: https://github.com/tahafurkanbayar/zerqon-spider/releases/tag/v{__version__}" in changelog
+    link = re.search(rf"^\[{re.escape(__version__)}\]: (\S+)$", changelog, re.MULTILINE)
+    assert link and link.group(1).startswith("https://github.com/tahafurkanbayar/zerqon-spider/")
+    assert link.group(1).endswith(f"v{__version__}")

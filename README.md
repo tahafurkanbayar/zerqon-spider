@@ -11,7 +11,7 @@ teknik kanıtlarıyla tespit eden, bağlama göre önceliklendiren ve profesyone
 
 - Veriler yalnızca sizin bilgisayarınızda saklanır. **Telemetri, hesap sistemi veya üçüncü taraf analiz servisi yoktur.**
 - Yönetim arayüzü varsayılan olarak yalnızca `127.0.0.1` adresini dinler.
-- Güncel sürüm: **v1.0.0** — [sürümler](https://github.com/tahafurkanbayar/zerqon-spider/releases) · [değişiklik günlüğü](CHANGELOG.md)
+- Güncel sürüm: **v1.1.0** (Windows masaüstü uygulaması) — [sürümler](https://github.com/tahafurkanbayar/zerqon-spider/releases) · [değişiklik günlüğü](CHANGELOG.md)
 
 ---
 
@@ -19,17 +19,18 @@ teknik kanıtlarıyla tespit eden, bağlama göre önceliklendiren ve profesyone
 1. [Özellikler](#özellikler)
 2. [Teknoloji yığını](#teknoloji-yığını)
 3. [Sistem gereksinimleri](#sistem-gereksinimleri)
-4. [Kurulum ve ilk çalıştırma](#kurulum-ve-ilk-çalıştırma)
-5. [Kullanım](#kullanım)
-6. [Proje mimarisi](#proje-mimarisi)
-7. [Veritabanı yapısı](#veritabanı-yapısı)
-8. [Tarama ve izin politikası](#tarama-ve-izin-politikası)
-9. [Veri saklama konumu](#veri-saklama-konumu)
-10. [Yedekleme ve geri yükleme](#yedekleme-ve-geri-yükleme)
-11. [Testler](#testler)
-12. [Performans ve sınırlar](#performans-ve-sınırlar)
-13. [Bilinen eksikler ve sınırlamalar](#bilinen-eksikler-ve-sınırlamalar)
-14. [Sorun giderme](#sorun-giderme)
+4. [Windows masaüstü uygulaması](#windows-masaüstü-uygulaması)
+5. [Kurulum ve ilk çalıştırma](#kurulum-ve-ilk-çalıştırma)
+6. [Kullanım](#kullanım)
+7. [Proje mimarisi](#proje-mimarisi)
+8. [Veritabanı yapısı](#veritabanı-yapısı)
+9. [Tarama ve izin politikası](#tarama-ve-izin-politikası)
+10. [Veri saklama konumu](#veri-saklama-konumu)
+11. [Yedekleme ve geri yükleme](#yedekleme-ve-geri-yükleme)
+12. [Testler](#testler)
+13. [Performans ve sınırlar](#performans-ve-sınırlar)
+14. [Bilinen eksikler ve sınırlamalar](#bilinen-eksikler-ve-sınırlamalar)
+15. [Sorun giderme](#sorun-giderme)
 
 ---
 
@@ -91,6 +92,38 @@ HTTP/yönlendirme · URL yapısı ve varyasyonları · Title · Meta description
 - İlk kurulumda **internet bağlantısı** (Python paketleri ve ~150 MB Chromium indirilir)
 - ~600 MB disk (sanal ortam + Chromium) + tarama verileri için ek alan
 - **Linux:** Chromium'un sistem kütüphaneleri gerekebilir (bkz. [Sorun giderme](#sorun-giderme)). Chromium kurulamasa bile standart tarama çalışır; yalnızca JavaScript/Hibrit mod devre dışı kalır.
+
+---
+
+## Windows masaüstü uygulaması
+
+Python kurmadan kullanmak için [Sürümler](https://github.com/tahafurkanbayar/zerqon-spider/releases/latest) sayfasından
+`ZerqonSpider-<sürüm>-windows-x64.exe` dosyasını indirip çalıştırın. Kurulum gerekmez (taşınabilir tek dosya).
+
+- **Gereksinim:** Windows 10/11 (64 bit) ve Microsoft Edge **WebView2 Runtime** (Windows 11'de ve güncel Windows 10'da hazır gelir;
+  yoksa uygulama indirme bağlantısını gösterir).
+- Uygulama kendi penceresinde açılır; arka plandaki yerel sunucu yalnızca `127.0.0.1` adresini dinler ve pencere kapanınca durur.
+  Aynı anda tek örnek çalışır.
+- **JavaScript render:** Chromium pakete gömülü değildir. JavaScript/Hibrit modu için *Ayarlar → JavaScript render motoru →
+  Chromium'u indir ve kur* (~100 MB, bir kez). Standart tarama için gerekmez.
+- **Veriler:** `%LOCALAPPDATA%\Zerqon Spider\data` (veritabanı, loglar, raporlar, yedekler). Yapılandırma için aynı klasöre
+  `.env` koyabilirsiniz (`ZERQON_HOST`/`ZERQON_PORT` masaüstü sürümünde yok sayılır). Chromium Playwright'ın varsayılan
+  klasörüne (`%LOCALAPPDATA%\ms-playwright`) kurulur.
+- Dosya kod imzalı değildir; Windows SmartScreen ilk açılışta "Windows kişisel bilgisayarınızı korudu" uyarısı gösterebilir
+  (*Ek bilgi → Yine de çalıştır*). İndirdiğiniz dosyayı yayındaki `.sha256` değeriyle doğrulayabilirsiniz:
+  `Get-FileHash .\ZerqonSpider-1.1.0-windows-x64.exe -Algorithm SHA256`.
+- Komut satırı: `ZerqonSpider.exe --smoke-test` pencere açmadan sunucuyu doğrular (çıkış kodu 0 = başarılı).
+
+**Kaynaktan derleme** (Windows, Python 3.12):
+
+```powershell
+.venv\Scripts\python -m pip install -r requirements-desktop.txt
+.venv\Scripts\python -m zerqon.desktop              # paketlemeden masaüstü penceresiyle çalıştır
+.venv\Scripts\python packaging\windows\build.py    # dist\ZerqonSpider-<sürüm>-windows-x64.exe (+ .sha256)
+```
+
+`build.py` PyInstaller ile paketi üretir ve geçici bir veri klasöründe `--smoke-test` ile doğrular. GitHub'da her yayımlanan
+sürüm için aynı derleme `.github/workflows/windows-build.yml` ile otomatik yapılır ve `.exe` yayına eklenir.
 
 ---
 
@@ -168,9 +201,12 @@ python3.12 -m venv .venv
 
 ```
 run.py                      Tek komutlu başlatıcı (venv, bağımlılık, Chromium, sunucu)
+packaging/windows/          PyInstaller spec, build.py (paketle + smoke test), ikon
 zerqon/
 ├── __main__.py             python -m zerqon (migration + uvicorn, --backup/--restore)
-├── config.py               Ayarlar (.env, pydantic-settings)
+├── desktop.py              Masaüstü sürümü: pywebview penceresi, arka plan sunucusu, tek örnek kilidi
+├── browser_setup.py        Chromium (headless shell) kurulum durumu ve arka planda kurulum
+├── config.py               Ayarlar (.env, pydantic-settings; paketlenmiş sürümde kullanıcı klasörü)
 ├── logging_config.py       Dönen log dosyası, gizli bilgi maskeleme
 ├── formatting.py           Sayı/tarih/boyut biçimlendirme
 ├── schemas.py              Pydantic doğrulama modelleri
@@ -241,7 +277,7 @@ SQLite, WAL modu, yabancı anahtarlar açık, tüm sorgular parametrik. Şema s�
 
 ## Veri saklama konumu
 
-Varsayılan: proje kökünde `data/` (`ZERQON_DATA_DIR` ile değiştirilebilir). Ayarlar sayfasında gerçek yollar gösterilir.
+Varsayılan: proje kökünde `data/`; Windows masaüstü sürümünde `%LOCALAPPDATA%\Zerqon Spider\data` (`ZERQON_DATA_DIR` ile değiştirilebilir). Ayarlar sayfasında gerçek yollar gösterilir.
 
 ```
 data/
@@ -285,7 +321,10 @@ SSRF negatif testleri, canonical/title/description/heading analizleri, indexlene
 karşılaştırma, yedekleme, veritabanı işlemleri, durdur/devam, 429 geri çekilme, Playwright JS/hibrit render ve
 arayüz üzerinden uçtan uca başarılı senaryo. Chromium kurulu değilse render testleri otomatik atlanır.
 
-Son çalıştırma: **148 test, 148 geçti** (Windows 10, Python 3.12.15).
+Masaüstü sürümü testleri (`tests/test_desktop.py`) pywebview gerektirmez; pencere dışındaki her şeyi (port, tek örnek kilidi,
+sunucu yaşam döngüsü, Chromium kurulum akışı) doğrular.
+
+Son çalıştırma: **163 test, 163 geçti** (Windows 10, Python 3.12.15).
 
 ---
 
@@ -317,6 +356,10 @@ Son çalıştırma: **148 test, 148 geçti** (Windows 10, Python 3.12.15).
 - Playwright alt istekleri SSRF kontrolünden geçer, ancak Chromium kendi DNS çözümlemesini yaptığı için render sırasında teorik DNS-rebinding riski tamamen ortadan kaldırılamaz; WebSocket istekleri filtrelenmez.
 - Yanıt süresi "TTFB + gövde indirme" toplamıdır; ayrı TTFB ölçümü yoktur.
 - Kimlik doğrulama gerektiren (login) sayfalar ve özel HTTP başlıkları/çerezlerle tarama desteklenmez.
+- **Windows masaüstü sürümü:** `.exe` kod imzalı değildir (SmartScreen uyarısı); WebView2 Runtime gerektirir; PyInstaller ile
+  paketlenmiş tek dosya uygulamalar bazı antivirüs yazılımlarında yanlış pozitif verebilir. Açılışta paket geçici klasöre
+  açıldığı için ilk pencere birkaç saniyede gelir. Otomatik güncelleme yoktur. macOS ve Linux için paket henüz yoktur
+  (bu sistemlerde `python run.py` kullanılır).
 - Proje lisansı henüz belirlenmemiştir.
 
 ---

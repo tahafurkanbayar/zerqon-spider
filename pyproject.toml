@@ -1,6 +1,6 @@
 [project]
 name = "zerqon-spider"
-version = "1.0.0"
+version = "1.1.0"
 description = "Zerqon Spider — Advanced SEO Crawler & Auditor. Crawl Deeper. Discover More."
 readme = "README.md"
 requires-python = ">=3.12"

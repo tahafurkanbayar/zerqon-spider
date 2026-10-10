@@ -1,0 +1,6 @@
+# Zerqon Spider — Windows masaüstü sürümü (pencere + paketleme)
+-r requirements.txt
+pywebview==6.2.1
+pyinstaller==6.22.3
+# Yalnızca packaging/windows/make_icon.py (ikon üretimi) için
+pillow==12.3.0

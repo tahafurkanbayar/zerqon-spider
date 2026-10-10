@@ -121,3 +121,15 @@ Hibrit modda render tetikleyicileri: düşük ham kelime sayısı, boş SPA kök
 - Değişiklikler geliştirilirken `CHANGELOG.md` → `[Yayımlanmamış]` altına (Eklendi / Değişti / Düzeltildi / Kaldırıldı / Güvenlik) yazılır.
 - Yayın adımları: sürüm numarasını iki dosyada artır → `[Yayımlanmamış]` başlığını `## [X.Y.Z] — YYYY-AA-GG` yap, karşılaştırma bağlantılarını güncelle → testler → commit `Sürüm X.Y.Z` → `git tag -a vX.Y.Z` → push (`--follow-tags`) → `gh release create vX.Y.Z` (notlar CHANGELOG bölümünden).
 - Etiketler `v` önekli (`v1.0.0`). Commit/etiket/yayın yazarı Taha Furkan Bayar; AI atfı eklenmez.
+
+## ADR-022 — Windows masaüstü sürümü: pywebview + PyInstaller (tek dosya)
+**Durum:** Kabul · 2026-10-10 · v1.1.0
+**Bağlam:** Kullanıcı Python kurmadan çalışan bir Windows uygulaması istedi; ileride macOS/Linux/web sürümleri de olabilir. Arayüz zaten yerel bir web uygulaması.
+**Karar:**
+- Pencere: **pywebview 6 (WinForms + Edge WebView2)**. Electron/Tauri reddedildi (Python arka uca ek çalışma zamanı/katman). WebView2 yoksa pywebview sessizce IE (mshtml) motoruna düştüğü için `winforms.renderer` denetlenir; edgechromium değilse kullanıcıya indirme bağlantısı gösterilir.
+- Sunucu: aynı FastAPI uygulaması, uvicorn ayrı thread'de; **daima 127.0.0.1**, tercih edilen port 47865 (çerez/oturum tutarlılığı), doluysa OS'nin verdiği boş port. `.env`'deki host/port masaüstünde yok sayılır.
+- **Tek örnek kilidi** (veri klasöründe `msvcrt.locking` / `fcntl.flock`): iki örnek aynı DB'yi açarsa ikincisi başlangıçta çalışan taramaları "interrupted" işaretlerdi.
+- Paket: **PyInstaller onefile**, `console=False`, dosya sürüm bilgisi + ikon. Playwright sürücüsü (node.exe, ~100 MB açık) pakete girer; **Chromium girmez** — Ayarlar ekranından `playwright install --only-shell chromium` ile indirilir (headless shell yeterli, ~100 MB; tam Chromium + headless shell ~300 MB olurdu). Kurulum durumu `install --dry-run` çıktısındaki konum + `INSTALLATION_COMPLETE` işaretinden okunur (PLAYWRIGHT_BROWSERS_PATH'e saygılı).
+- Paketlenmiş sürümde (`sys.frozen`) `.env` ve `data/` → `%LOCALAPPDATA%\Zerqon Spider\` (`config.config_root()`); macOS/Linux için platform klasörleri de tanımlı (gelecek paketler için).
+- Doğrulama: `ZerqonSpider.exe --smoke-test` (pencere açmadan sayfalar/statik dosyalar/sürücü); `build.py` ve CI her derlemede çalıştırır. CI (`windows-build.yml`) `release: published` olayında derler ve `.exe` + `.sha256`'yı yayına ekler.
+**Sonuç:** ~61 MB tek exe, açılışta ~3–6 sn geçici klasöre açma. Kod imzası yok (SmartScreen uyarısı) — README "Bilinen eksikler".

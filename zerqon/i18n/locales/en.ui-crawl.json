@@ -121,7 +121,11 @@
     "robots": "robots.txt",
     "mobile": "Mobile"
   },
-  "event_levels": {"info": "Info", "warning": "Warning", "error": "Error"},
+  "event_levels": {
+    "info": "Info",
+    "warning": "Warning",
+    "error": "Error"
+  },
   "events": {
     "localhost_disabled": "Localhost was allowed for this crawl, but ZERQON_ALLOW_LOCALHOST is off in .env; local addresses were blocked.",
     "crawl_delay_applied": "The robots.txt Crawl-delay value was applied.",
@@ -134,7 +138,7 @@
     "sitemap_http_error": "A sitemap returned a non-200 response.",
     "sitemap_invalid": "A sitemap could not be parsed (invalid XML).",
     "sitemap_limit": "The sitemap file limit was reached; remaining sitemaps were not processed.",
-    "render_unavailable": "JavaScript rendering could not start (Chromium not installed or a system dependency is missing). The crawl continued in standard mode. Install with: python -m playwright install chromium"
+    "render_unavailable": "JavaScript rendering could not start (Chromium not installed or a system dependency is missing). The crawl continued in standard mode. Install it under Settings → JavaScript rendering engine."
   },
   "robots_status": {
     "ok": "Read and applied",

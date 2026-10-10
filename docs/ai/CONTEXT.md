@@ -16,16 +16,20 @@
   - Sunucu: `.venv/Scripts/python -m zerqon` veya `python run.py`
   - Bağımlılık ekleme: `uv pip install --python .venv <pkg>` → `requirements.txt` güncelle
 - Chromium: `.venv/Scripts/python -m playwright install chromium` (kurulu)
+  - Masaüstü: `uv pip install --python .venv -r requirements-desktop.txt`; pencere `python -m zerqon.desktop`; paket `python packaging/windows/build.py` → `dist/` (exe + sha256, smoke test dahil)
 
 ## Mevcut durum
-- **Yayımlanan sürüm:** v1.0.0 (2026-10-10) — https://github.com/tahafurkanbayar/zerqon-spider/releases/tag/v1.0.0
+- **Yayımlanan sürüm:** v1.1.0 (2026-10-10, Windows masaüstü .exe) — https://github.com/tahafurkanbayar/zerqon-spider/releases/latest
 - **Geliştirme modeli:** Sürüm bazlı (ADR-021). Değişiklikler `CHANGELOG.md` → `[Yayımlanmamış]` altına yazılır; yayında sürüm `zerqon/__init__.py` + `pyproject.toml` içinde artırılır, `vX.Y.Z` etiketi + `gh release create`.
-- **Sıradaki adım:** v1.1.0 kapsamı (ROADMAP "Sürüm planı"). Kullanıcı geri bildirimine göre belirlenecek; adaylar README "Bilinen eksikler" listesinde (GSC entegrasyonu, URL listesi içe aktarma, tam ISO hreflang tablosu, kimlik doğrulamalı tarama)
+- **Platformlar:** Windows masaüstü (.exe, ADR-022) + kaynak koddan `python run.py` (Windows/Linux/macOS). Kullanıcı ileride macOS/Linux paketi ve web sürümü düşünüyor.
+- **Sıradaki adım:** v1.2.0 kapsamı (ROADMAP "Sürüm planı"). Kullanıcı geri bildirimine göre belirlenecek; adaylar README "Bilinen eksikler" listesinde (GSC entegrasyonu, URL listesi içe aktarma, tam ISO hreflang tablosu, kimlik doğrulamalı tarama)
 
 ## Kod haritası (özet)
 Bkz. `DECISIONS.md` ADR-001. Giriş noktaları:
 - `run.py` → bootstrap (venv, deps, chromium) → `python -m zerqon`
 - `zerqon/__main__.py` → migration + uvicorn
+- `zerqon/desktop.py` → masaüstü: tek örnek kilidi, ServerThread (127.0.0.1), pywebview penceresi; `packaging/windows/` spec + build
+- `zerqon/browser_setup.py` → Chromium headless shell durum/kurulum (Ayarlar kartı, HTMX)
 - `zerqon/web/app.py::create_app()`
 - `zerqon/crawler/manager.py::CrawlManager` → `engine.py::CrawlEngine`
 - `zerqon/analysis/runner.py` → page checks (canlı) + site checks (tarama sonu)

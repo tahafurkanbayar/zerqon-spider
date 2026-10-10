@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-10 — v1.1.0: Windows masaüstü uygulaması
+- `zerqon/desktop.py`: pywebview (WebView2) penceresi, uvicorn arka plan thread'i (yalnız 127.0.0.1, tercih port 47865), tek örnek kilidi, ekrana sığan pencere, WebView2 yoksa uyarı, `--smoke-test`.
+- `zerqon/browser_setup.py` + Ayarlar kartı: Chromium headless shell durum/kurulum (HTMX polling). Render hatası olayı bu karta yönlendiriyor.
+- `config.py`: paketlenmiş sürümde `.env`/`data` → `%LOCALAPPDATA%\Zerqon Spider`.
+- `packaging/windows/`: PyInstaller spec (sürüm bilgisi, ikon, Playwright sürücüsü), `build.py` (derle + smoke test + sha256), `make_icon.py`, `zerqon.ico`. `requirements-desktop.txt`. CI: `.github/workflows/windows-build.yml`.
+- Doğrulama (exe ile, izole veri/tarayıcı klasörü): pencere açıldı (ekran görüntüsü), Ayarlar'dan Chromium indirildi (140 sn), yerel test sitesinde JavaScript modu tarama 28 URL / 21 render, pencere kapatınca süreçler ve geçici klasör temizlendi.
+- Testler: 163/163 geçti (yeni: `tests/test_desktop.py`).
+
 ## 2026-10-10 — v1.0.0 yayımlandı; sürüm bazlı geliştirmeye geçildi
 - `CHANGELOG.md` (Keep a Changelog + SemVer), ADR-021 sürümleme ve yayın süreci.
 - `tests/test_version.py`: `__version__` = `pyproject.toml` sürümü ve CHANGELOG kaydı zorunlu.

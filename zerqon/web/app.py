@@ -16,6 +16,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from zerqon import PRODUCT_NAME, __version__
+from zerqon.browser_setup import BrowserInstaller
 from zerqon.config import Settings, get_settings
 from zerqon.db.connection import Database
 from zerqon.db.migrator import migrate
@@ -90,6 +91,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = settings
     app.state.db = db
     app.state.manager = manager
+    app.state.browser_installer = BrowserInstaller()
 
     @app.middleware("http")
     async def request_context(

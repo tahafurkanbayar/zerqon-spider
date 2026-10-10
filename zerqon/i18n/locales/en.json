@@ -230,6 +230,22 @@
     "bind": "Listening address",
     "localhost_mode": "Localhost mode",
     "localhost_help": "Controlled by ZERQON_ALLOW_LOCALHOST in the .env file.",
-    "appearance": "Appearance"
+    "appearance": "Appearance",
+    "config_file": "Configuration file",
+    "browser_title": "JavaScript rendering engine",
+    "browser_text": "JavaScript and Hybrid crawl modes use Chromium (headless). Not needed for standard crawls.",
+    "browser_checking": "Checking status…",
+    "browser_installed": "Installed",
+    "browser_missing": "Not installed",
+    "browser_location": "Location",
+    "browser_install": "Download and install Chromium",
+    "browser_installing": "Downloading and installing Chromium… This may take a few minutes depending on your connection.",
+    "browser_failed": "Installation failed. Check your internet connection and try again.",
+    "browser_size": "About 100 MB is downloaded; needed only once."
+  },
+  "desktop": {
+    "already_running": "Zerqon Spider is already running. Use the open window.",
+    "webview2_missing": "The application window could not be opened. Microsoft Edge WebView2 Runtime is required:\nhttps://developer.microsoft.com/microsoft-edge/webview2/\n\nDetails: {error}",
+    "start_failed": "The local server could not start. Details are in the log folder:\n{logs}\n\n{error}"
   }
 }

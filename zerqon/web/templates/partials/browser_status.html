@@ -1,0 +1,14 @@
+<div id="browser-status" class="stack"{% if st.state == 'running' %} hx-get="/settings/browser" hx-trigger="every 2s" hx-swap="outerHTML"{% endif %}>
+  <p class="muted">{{ t('app_settings.browser_text') }}</p>
+  {% if st.installed %}
+  <p><span class="badge status-completed">{{ t('app_settings.browser_installed') }}</span></p>
+  <p class="small muted">{{ t('app_settings.browser_location') }}: <span class="mono break">{{ st.location }}</span></p>
+  {% elif st.state == 'running' %}
+  <p><span class="spinner"></span> {{ t('app_settings.browser_installing') }}</p>
+  {% else %}
+  <p><span class="badge status-cancelled">{{ t('app_settings.browser_missing') }}</span></p>
+  {% if st.state == 'failed' %}<div class="alert alert-error small">{{ t('app_settings.browser_failed') }}<div class="mono break">{{ st.error }}</div></div>{% endif %}
+  <div><button class="btn btn-primary" type="button" hx-post="/settings/browser/install" hx-target="#browser-status" hx-swap="outerHTML">{{ icon('download', 16) }} {{ t('app_settings.browser_install') }}</button></div>
+  <p class="small muted">{{ t('app_settings.browser_size') }}</p>
+  {% endif %}
+</div>
