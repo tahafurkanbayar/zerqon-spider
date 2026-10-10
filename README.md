@@ -5,13 +5,39 @@
 <h1 align="center">Zerqon Spider</h1>
 <p align="center"><b>Crawl Deeper. Discover More.</b><br>Advanced SEO Crawler &amp; Auditor</p>
 
+<p align="center">
+  <a href="https://github.com/tahafurkanbayar/zerqon-spider/releases/latest/download/ZerqonSpider-windows-x64.exe">
+    <img src="docs/assets/download-windows.svg" width="384" alt="Windows için indir">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/tahafurkanbayar/zerqon-spider/releases/latest"><img src="https://img.shields.io/github/v/release/tahafurkanbayar/zerqon-spider?style=flat-square&label=s%C3%BCr%C3%BCm&color=2563EB" alt="Son sürüm"></a>
+  <img src="https://img.shields.io/badge/Windows-10%20%7C%2011%20(64%20bit)-0F1C38?style=flat-square" alt="Windows 10 | 11">
+  <a href="https://github.com/tahafurkanbayar/zerqon-spider/actions/workflows/windows-build.yml"><img src="https://img.shields.io/github/actions/workflow/status/tahafurkanbayar/zerqon-spider/windows-build.yml?style=flat-square&label=derleme" alt="Derleme durumu"></a>
+  <img src="https://img.shields.io/badge/Python-3.12-0891B2?style=flat-square" alt="Python 3.12">
+</p>
+
+<p align="center">
+  <sub>
+    Taşınabilir tek <code>.exe</code> · Python gerekmez ·
+    <a href="#windows-masaüstü-uygulaması">kurulum notları</a> ·
+    <a href="https://github.com/tahafurkanbayar/zerqon-spider/releases">tüm sürümler</a> ·
+    <a href="#kurulum-ve-ilk-çalıştırma">kaynak koddan çalıştır (Windows / Linux / macOS)</a>
+  </sub>
+</p>
+
+<p align="center">
+  <img src="docs/assets/screenshot-dashboard.png" width="900" alt="Zerqon Spider kontrol paneli (koyu tema)">
+</p>
+
 Zerqon Spider, **sahibi olduğunuz veya tarama izniniz bulunan** web sitelerini tarayan, teknik SEO sorunlarını
 teknik kanıtlarıyla tespit eden, bağlama göre önceliklendiren ve profesyonel raporlar üreten, **tamamen yerel**
 çalışan bir teknik SEO denetim yazılımıdır. Screaming Frog SEO Spider'a işlevsel bir alternatif olarak tasarlanmıştır.
 
 - Veriler yalnızca sizin bilgisayarınızda saklanır. **Telemetri, hesap sistemi veya üçüncü taraf analiz servisi yoktur.**
 - Yönetim arayüzü varsayılan olarak yalnızca `127.0.0.1` adresini dinler.
-- Güncel sürüm: **v1.1.0** (Windows masaüstü uygulaması) — [sürümler](https://github.com/tahafurkanbayar/zerqon-spider/releases) · [değişiklik günlüğü](CHANGELOG.md)
+- Sürüm geçmişi: [değişiklik günlüğü](CHANGELOG.md)
 
 ---
 
@@ -97,8 +123,9 @@ HTTP/yönlendirme · URL yapısı ve varyasyonları · Title · Meta description
 
 ## Windows masaüstü uygulaması
 
-Python kurmadan kullanmak için [Sürümler](https://github.com/tahafurkanbayar/zerqon-spider/releases/latest) sayfasından
-`ZerqonSpider-<sürüm>-windows-x64.exe` dosyasını indirip çalıştırın. Kurulum gerekmez (taşınabilir tek dosya).
+Python kurmadan kullanmak için **[en son sürümü indirin](https://github.com/tahafurkanbayar/zerqon-spider/releases/latest/download/ZerqonSpider-windows-x64.exe)**
+ve çift tıklayarak çalıştırın. Kurulum gerekmez (taşınabilir tek dosya). Sürüm numaralı dosyalar ve SHA-256 değerleri
+[Sürümler](https://github.com/tahafurkanbayar/zerqon-spider/releases) sayfasındadır.
 
 - **Gereksinim:** Windows 10/11 (64 bit) ve Microsoft Edge **WebView2 Runtime** (Windows 11'de ve güncel Windows 10'da hazır gelir;
   yoksa uygulama indirme bağlantısını gösterir).

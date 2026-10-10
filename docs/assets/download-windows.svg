@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="384" height="72" viewBox="0 0 384 72" role="img" aria-label="Windows için indir">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#0891B2"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="382" height="70" rx="16" fill="url(#bg)"/>
+  <rect x="1" y="1" width="382" height="35" rx="16" fill="url(#shine)"/>
+  <rect x="1.5" y="1.5" width="381" height="69" rx="15.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.25"/>
+  <g transform="translate(26 20)" fill="#FFFFFF">
+    <rect x="0" y="0" width="14.5" height="14.5" rx="1.5"/>
+    <rect x="17.5" y="0" width="14.5" height="14.5" rx="1.5"/>
+    <rect x="0" y="17.5" width="14.5" height="14.5" rx="1.5"/>
+    <rect x="17.5" y="17.5" width="14.5" height="14.5" rx="1.5"/>
+  </g>
+  <line x1="78" y1="18" x2="78" y2="54" stroke="#FFFFFF" stroke-opacity="0.3"/>
+  <text x="96" y="35" fill="#FFFFFF" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="21" font-weight="700">Windows için indir</text>
+  <text x="96" y="54" fill="#FFFFFF" fill-opacity="0.85" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12.5">Ücretsiz · 64 bit · Kurulum gerektirmez</text>
+  <g transform="translate(348 34)" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 -10 V7"/>
+    <path d="M-7 0 L0 7 L7 0"/>
+    <path d="M-9 12 H9" stroke-opacity="0.7"/>
+  </g>
+</svg>

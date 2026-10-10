@@ -5,6 +5,9 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır; 
 
 ## [Yayımlanmamış]
 
+### Eklendi
+- README'nin başına "Windows için indir" düğmesi, sürüm/derleme rozetleri ve uygulama ekran görüntüsü. Düğme her zaman en son sürümü indirir: yayınlara sabit adlı `ZerqonSpider-windows-x64.exe` kopyası da eklenir.
+
 ### Düzeltildi
 - Windows derleme iş akışı (CI): smoke test başarılı olsa bile cp1252 konsolda Türkçe çıktı yüzünden `build.py` hata veriyordu; çıktı UTF-8'e alındı, GitHub Actions eylemleri Node 24 sürümlerine güncellendi. Uygulama kodu değişmedi (v1.1.0 exe'si etkilenmez).
 

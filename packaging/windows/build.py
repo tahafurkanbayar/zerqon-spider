@@ -3,7 +3,8 @@
     .venv/Scripts/python -m pip install -r requirements-desktop.txt
     .venv/Scripts/python packaging/windows/build.py
 
-Çıktı: `dist/ZerqonSpider-<sürüm>-windows-x64.exe` (+ `.sha256`). Derlemeden sonra paket
+Çıktı: `dist/ZerqonSpider-<sürüm>-windows-x64.exe`, sabit adlı kopyası `dist/ZerqonSpider-windows-x64.exe`
+(README'deki "Windows için indir" düğmesi için) ve `.sha256`. Derlemeden sonra paket
 `--smoke-test` ile geçici bir veri klasöründe çalıştırılır; başarısızsa çıkış kodu 1'dir.
 """
 
@@ -21,6 +22,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 DIST = ROOT / "dist"
+STABLE_NAME = "ZerqonSpider-windows-x64.exe"  # releases/latest/download/<ad> bağlantısı sürümden bağımsız
 sys.path.insert(0, str(ROOT))
 
 from zerqon import __version__  # noqa: E402
@@ -36,6 +38,7 @@ def build() -> Path:
     built = DIST / "ZerqonSpider.exe"
     target = DIST / f"ZerqonSpider-{__version__}-windows-x64.exe"
     shutil.copyfile(built, target)
+    shutil.copyfile(built, DIST / STABLE_NAME)
     return target
 
 
@@ -56,7 +59,7 @@ def smoke_test(exe: Path) -> None:
 def write_checksum(exe: Path) -> Path:
     digest = hashlib.sha256(exe.read_bytes()).hexdigest()
     out = exe.with_name(exe.name + ".sha256")
-    out.write_text(f"{digest}  {exe.name}\n", encoding="ascii")
+    out.write_text(f"{digest}  {exe.name}\n{digest}  {STABLE_NAME}\n", encoding="ascii")
     return out
 
 

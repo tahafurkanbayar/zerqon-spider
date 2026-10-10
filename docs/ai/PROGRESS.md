@@ -4,6 +4,11 @@
 
 ---
 
+## 2026-10-10 — README indirme bölümü (yayımlanmamış)
+- README başına "Windows için indir" düğmesi (`docs/assets/download-windows.svg`, marka renkleri; açık/koyu GitHub temasında kontrol edildi), shields.io rozetleri (sürüm, Windows 10/11, derleme durumu, Python), koyu tema ekran görüntüsü (`docs/assets/screenshot-dashboard.png`).
+- Düğme `releases/latest/download/ZerqonSpider-windows-x64.exe` → `build.py` ve CI her yayına sabit adlı kopyayı da ekler; v1.1.0 yayınına elle eklendi, `.sha256` iki adı da içeriyor.
+- Not: shields.io artık Windows logosu sunmuyor (simple-icons Microsoft logolarını kaldırdı) → düğme özel SVG.
+
 ## 2026-10-10 — CI düzeltmesi (yayımlanmamış)
 - v1.1.0 yayınında `windows-build.yml` başarısız: exe derlendi ve smoke test geçti, ancak `build.py` cp1252 konsolda Türkçe çıktı basamadı. Çıktı UTF-8'e alındı (`PYTHONUTF8=1` + `reconfigure`), eylemler Node 24 sürümlerine güncellendi. v1.1.0 yayınındaki exe yerelde derlenip doğrulanmış olandır.
 
