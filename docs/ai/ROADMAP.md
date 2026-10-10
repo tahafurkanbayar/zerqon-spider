@@ -77,3 +77,9 @@
 | 15 | Güvenlik önlemleri | [x] | `test_security` (SSRF), CSRF/Host/XSS/SQLi/yol enjeksiyonu testleri |
 | 16 | Testler çalıştırıldı | [x] | 148/148 geçti |
 | 17 | README eksiksiz | [x] | README.md (§20 başlıklarının tamamı) |
+
+## Sürüm planı
+| Sürüm | Durum | Kapsam |
+|---|---|---|
+| v1.0.0 | Yayımlandı (2026-10-10) | Aşama 1–6, §23 kabul kriterleri |
+| v1.1.0 | Planlanıyor | Kullanıcı geri bildirimine göre belirlenecek (adaylar: URL listesi içe aktarma, GSC entegrasyonu, kimlik doğrulamalı tarama, tam ISO hreflang tablosu) |

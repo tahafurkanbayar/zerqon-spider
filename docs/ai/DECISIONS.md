@@ -111,3 +111,13 @@ Hibrit modda render tetikleyicileri: düşük ham kelime sayısı, boş SPA kök
 ## ADR-020 — Çeviri dosyaları parçalı
 **Durum:** Kabul · 2026-10-09
 **Karar:** `load_catalog(lang)` `<lang>.json` + `<lang>.*.json` dosyalarını birleştirir; çakışan anahtar hata verir. Sorun metinleri `issues-a/b` parçalarında.
+
+## ADR-021 — Sürüm bazlı geliştirme (SemVer + GitHub Releases)
+**Durum:** Kabul · 2026-10-10
+**Bağlam:** v1.0.0 yayımlandı; bundan sonraki geliştirmeler aşama yerine sürüm bazlı ilerleyecek.
+**Karar:**
+- Sürümleme [SemVer](https://semver.org/lang/tr/): `MAJOR` geriye uyumsuz (DB şeması geri dönüşsüz, yedek biçimi, CLI kırılması), `MINOR` yeni özellik, `PATCH` hata düzeltmesi.
+- Sürüm tek kaynakta değil iki yerde tutulur: `zerqon/__init__.py::__version__` ve `pyproject.toml`; `tests/test_version.py` eşitliği ve `CHANGELOG.md` kaydını zorunlu kılar.
+- Değişiklikler geliştirilirken `CHANGELOG.md` → `[Yayımlanmamış]` altına (Eklendi / Değişti / Düzeltildi / Kaldırıldı / Güvenlik) yazılır.
+- Yayın adımları: sürüm numarasını iki dosyada artır → `[Yayımlanmamış]` başlığını `## [X.Y.Z] — YYYY-AA-GG` yap, karşılaştırma bağlantılarını güncelle → testler → commit `Sürüm X.Y.Z` → `git tag -a vX.Y.Z` → push (`--follow-tags`) → `gh release create vX.Y.Z` (notlar CHANGELOG bölümünden).
+- Etiketler `v` önekli (`v1.0.0`). Commit/etiket/yayın yazarı Taha Furkan Bayar; AI atfı eklenmez.

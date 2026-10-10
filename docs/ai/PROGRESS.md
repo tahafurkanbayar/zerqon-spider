@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-10 — v1.0.0 yayımlandı; sürüm bazlı geliştirmeye geçildi
+- `CHANGELOG.md` (Keep a Changelog + SemVer), ADR-021 sürümleme ve yayın süreci.
+- `tests/test_version.py`: `__version__` = `pyproject.toml` sürümü ve CHANGELOG kaydı zorunlu.
+- `v1.0.0` etiketi ve GitHub Release oluşturuldu.
+- Testler: 151/151 geçti.
+
 ## 2026-10-09 — Aşama 6 tamamlandı: Test ve son kontroller
 - Temiz klon doğrulaması: GitHub'dan klon → `python run.py` (sistem Python 3.15) → uv'nin CPython 3.12'si bulundu → venv + bağımlılıklar + Chromium → sunucu HTTP 200. İkinci çalıştırma 1,4 sn (kurulum atlandı). `run.py --backup` çalıştı.
 - README (Türkçe, tüm §20 başlıkları), `docs/SCORING.md`.

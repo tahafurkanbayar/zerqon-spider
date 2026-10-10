@@ -18,9 +18,9 @@
 - Chromium: `.venv/Scripts/python -m playwright install chromium` (kurulu)
 
 ## Mevcut durum
-- **Aktif aşama:** v1.0.0 tamamlandı — bakım / yeni özellik
-- **Son tamamlanan:** Aşama 6 (README, temiz klon kurulumu, son kontroller)
-- **Sıradaki adım:** Kullanıcı geri bildirimi; olası geliştirmeler README "Bilinen eksikler" listesinde (GSC entegrasyonu, URL listesi içe aktarma, tam ISO hreflang tablosu, kimlik doğrulamalı tarama)
+- **Yayımlanan sürüm:** v1.0.0 (2026-10-10) — https://github.com/tahafurkanbayar/zerqon-spider/releases/tag/v1.0.0
+- **Geliştirme modeli:** Sürüm bazlı (ADR-021). Değişiklikler `CHANGELOG.md` → `[Yayımlanmamış]` altına yazılır; yayında sürüm `zerqon/__init__.py` + `pyproject.toml` içinde artırılır, `vX.Y.Z` etiketi + `gh release create`.
+- **Sıradaki adım:** v1.1.0 kapsamı (ROADMAP "Sürüm planı"). Kullanıcı geri bildirimine göre belirlenecek; adaylar README "Bilinen eksikler" listesinde (GSC entegrasyonu, URL listesi içe aktarma, tam ISO hreflang tablosu, kimlik doğrulamalı tarama)
 
 ## Kod haritası (özet)
 Bkz. `DECISIONS.md` ADR-001. Giriş noktaları:

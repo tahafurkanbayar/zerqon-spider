@@ -11,6 +11,7 @@ teknik kanıtlarıyla tespit eden, bağlama göre önceliklendiren ve profesyone
 
 - Veriler yalnızca sizin bilgisayarınızda saklanır. **Telemetri, hesap sistemi veya üçüncü taraf analiz servisi yoktur.**
 - Yönetim arayüzü varsayılan olarak yalnızca `127.0.0.1` adresini dinler.
+- Güncel sürüm: **v1.0.0** — [sürümler](https://github.com/tahafurkanbayar/zerqon-spider/releases) · [değişiklik günlüğü](CHANGELOG.md)
 
 ---
 
