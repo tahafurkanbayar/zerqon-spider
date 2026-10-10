@@ -61,6 +61,9 @@ def write_checksum(exe: Path) -> Path:
 
 
 def main() -> int:
+    for stream in (sys.stdout, sys.stderr):  # CI konsolu cp1252 olabilir; Türkçe çıktı derlemeyi düşürmesin
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     if sys.platform != "win32":
         print("Bu betik yalnızca Windows'ta çalışır.")
         return 1

@@ -4,6 +4,9 @@
 
 ---
 
+## 2026-10-10 — CI düzeltmesi (yayımlanmamış)
+- v1.1.0 yayınında `windows-build.yml` başarısız: exe derlendi ve smoke test geçti, ancak `build.py` cp1252 konsolda Türkçe çıktı basamadı. Çıktı UTF-8'e alındı (`PYTHONUTF8=1` + `reconfigure`), eylemler Node 24 sürümlerine güncellendi. v1.1.0 yayınındaki exe yerelde derlenip doğrulanmış olandır.
+
 ## 2026-10-10 — v1.1.0: Windows masaüstü uygulaması
 - `zerqon/desktop.py`: pywebview (WebView2) penceresi, uvicorn arka plan thread'i (yalnız 127.0.0.1, tercih port 47865), tek örnek kilidi, ekrana sığan pencere, WebView2 yoksa uyarı, `--smoke-test`.
 - `zerqon/browser_setup.py` + Ayarlar kartı: Chromium headless shell durum/kurulum (HTMX polling). Render hatası olayı bu karta yönlendiriyor.
